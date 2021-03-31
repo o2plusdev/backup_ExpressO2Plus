@@ -27,6 +27,7 @@ const cryptr = new Cryptr('IPx3zITsOPot5Vq60Y6L');
 
 var server = 1;
 var browser_version = 'e';//'Gecko/78.0';
+var time_limit = 500000000000000;
 // server 1 keys
 const error_token = '1782210941:AAFCkpPQj_Dtuke0iPo5McguasWefmCkgMU';
 const new_reg_token = '1718850510:AAHRqMUD9tguJhvf2iysBpg8pCh-rCG-RLc';
@@ -181,7 +182,7 @@ app.get('/registration_page', function(req, res) {
         var present_time = moment().format('x');
         var time_diff = present_time - past_time;
         console.log(time_diff)
-        if (sess.user_ip == req.ip && time_diff <= 500000000000000 && sess.browser_validity.includes(browser_version)) {
+        if (sess.user_ip == req.ip && time_diff <= time_limit && sess.browser_validity.includes(browser_version)) {
             res.render("registration.ejs");
         } else {
             res.render("error.ejs");
