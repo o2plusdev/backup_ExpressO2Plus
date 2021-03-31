@@ -190,6 +190,7 @@ app.get('/registration_page', function(req, res) {
     } catch (error) {
         console.log('Error in /registration_page route by user : ' + sess.unique_id + ' on server ' + server);
         console.log(error);
+        telegram_route_error_bot(sess.unique_id, error)
         res.render("error.ejs");
     }
 })
