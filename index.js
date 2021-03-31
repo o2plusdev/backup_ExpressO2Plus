@@ -253,12 +253,12 @@ app.post('/api/registration', urlencodedParser, function(req, res) {
     }
 })
 
-app.get('/first_time_registration', function(req, res) {
+app.get('/api/first_time_registration', function(req, res) {
     res.render("first_time_registration.ejs");
 })
 
 
-app.get('/login_page', function(req, res) {
+app.get('/api/login_page', function(req, res) {
     try {
         var sess = req.session;
         //var token = JSON.parse(cryptr.decrypt(req.query.token));
