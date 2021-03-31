@@ -58,7 +58,7 @@ app.use(express.static(__dirname + '/views'));
 
 // redirect to any url except the present one
 
-var template = '<script type="text/javascript"> window.location.href="https://www.google.com"; </script>';
+var template = '<script type="text/javascript"> window.location.href=window.location.origin+"/ratelimit"; </script>';
 
 
 var limiter = new rateLimit({
@@ -71,14 +71,14 @@ var limiter = new rateLimit({
         // see Configuration section for more options and details
     }),
     message: template,
-    max: 100,
+    max: 1,
     // should match expireTimeMs
     windowMs: 15 * 60 * 1000
 });
 
 //  apply to all requests
 app.set('trust proxy', 1);
-app.use(limiter);
+app.use("/api/", limiter);
 
 
 // cookie storage 
@@ -170,7 +170,7 @@ var subjectlist_model = connect2.model('subjectlist_model', subjectlist_server);
 
 
 
-app.get('/registration_page', function(req, res) {
+app.get('/api/registration_page', function(req, res) {
     try {
         var sess = req.session;
         //var token = JSON.parse(cryptr.decrypt(req.query.token));
@@ -196,18 +196,74 @@ app.get('/registration_page', function(req, res) {
     } catch (error) {
         console.log('Error in /registration_page route by user : ' + sess.unique_id + ' on server ' + server);
         console.log(error);
-        telegram_route_error_bot(sess.unique_id, error)
+        var err_response_user = "__Error User__ : " + sess.unique_id;
+        var err_message = "__Error MSG__ : " + error;
+        var err_location = "__Error Location__ : registration_page on server " + server;
+        var err_message = err_response_user + "\r\n" + err_message + "\r\n" + err_location;
+        telegram_route_error_bot(err_message)
         res.render("error.ejs");
     }
 })
 
 
-function telegram_route_error_bot(unique_id, error) {
-    var err_response_user = "__Error User__ : " + unique_id;
-    var err_message = "__Error MSG__ : " + error;
-    var err_location = "__Error Location__ : registration_page on server " + server;
-    error_bot.sendMessage(telegram_admin, err_response_user + "\r\n" + err_message + "\r\n" + err_location).then(function(resp) {
-        console.log('ADMIN updated about error !!!')
+app.post('/api/registration', urlencodedParser, function(req, res) {
+    try {
+        var sess = req.session;
+        sess.browser_validity = req.useragent.source;
+        if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
+            var response = { username: req.body.username, password: req.body.password, branch: req.body.branch, phonenumber: req.body.phonenumber, phoneverified: false, unique_id: sess.unique_id, userblocked: true, video_watch_hour: 0, lec_quality: "highest", logincount: 0, like: [], dislike: [], points: 0, rank: 0, block_reason: "Nil" };
+            user_details_model.create(response, function(err, result) {
+                if (err) {
+                    if (err.code === 11000) {
+                        // duplicate 
+                        var error_json = err.keyPattern;
+                        var error_key = Object.keys(error_json);
+                        var response_result = { form_dupname: "username" == error_key, form_dupdev: "unique_id" == error_key, form_dupphone: "phonenumber" == error_key, form_success: false };
+                        console.log(response_result);
+                        res.end(JSON.stringify(response_result));
+                    }
+                } else {
+                    var username_update = "__Username__ : " + req.body.username;
+                    var unique_id_update = "__Unique ID__ : " + sess.unique_id;
+                    var user_state_update = "__State__ : " + sess.user_state;
+                    new_reg_bot.sendMessage(telegram_admin, username_update + "\r\n" + unique_id_update + "\r\n" + user_state_update).then(function(resp) {
+                        console.log('ADMIN informed about new User ' + req.body.username + '!!!')
+                    }).catch(function(error) {
+                        if (error.response && error.response.statusCode === 403) {
+                            console.log("ADMIN is not connected to o2plus_newuser_bot !!!");
+                        }
+                    });
+                    var response_result = { form_dupname: false, form_dupdev: false, form_dupphone: false, form_success: true };
+                    res.end(JSON.stringify(response_result));
+                }
+            })
+        } else {
+            var response_result = { form_dupname: false, form_dupdev: false, form_dupphone: false, form_success: false };
+            res.end(JSON.stringify(response_result));
+        }
+    } catch {
+        console.log('Error in /registration route by user : ' + sess.unique_id + ' on server ' + server);
+        console.log(err);
+        var err_response_user = "__Error User__ : " + sess.unique_id;
+        var err_message = "__Error MSG__ : " + err;
+        var err_location = "__Error Location__ : registration on server " + server;
+        error_bot.sendMessage(telegram_admin, err_response_user + "\r\n" + err_message + "\r\n" + err_location).then(function(resp) {
+            console.log('ADMIN updated about error !!!')
+        }).catch(function(error) {
+            if (error.response && error.response.statusCode === 403) {
+                console.log("ADMIN is not connected to o2plus_error_bot !!!");
+            }
+        });
+        var response_result = { form_dupname: false, form_dupdev: false, form_dupphone: false, form_success: false };
+        res.end(JSON.stringify(response_result));
+    }
+})
+
+
+
+function telegram_route_error_bot(message) {
+    error_bot.sendMessage(telegram_admin, message).then(function(resp) {
+        console.log('ADMIN updated !!!')
     }).catch(function(error) {
         if (error.response && error.response.statusCode === 403) {
             console.log("ADMIN is not connected to o2plus_error_bot !!!");
