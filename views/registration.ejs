@@ -1,0 +1,152 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
+    <style>
+    html, body {
+      background: #242424;;
+      display: flex;
+      width: 100%;
+      height: auto;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-form {
+            width: 350px;
+            height: auto;
+    }
+    
+    </style>
+</head>
+
+<body class="h-vh-100">
+    <form class="login-form bg-white p-6 mx-auto border bd-default win-shadow" data-role="validator" action="javascript:" data-clear-invalid="2000" data-on-error-form="invalidForm" data-on-validate-form="validateregForm" id="registrationjs" style="display: none;">
+        <span id="linuxjs" class="mif-paper-plane fg-blue mif-6x place-right" style="margin-top: 5px; right: 1%;"></span>
+        <h2> 02Plus </h2>
+        <hr class="thin mt-4 mb-4 bg-white">
+        <div class="form-group">
+            <input type="text" data-role="input" data-prepend="<span class='mif-user'>" placeholder="Username" data-validate="required minlength=5" name="username">
+            <span class="invalid_feedback"> Username must be 5 char long </span>
+        </div>
+        <div class="form-group">
+            <input type="text" data-role="input" data-prepend="<span class='mif-phone'>" placeholder="Phone Number" data-validate="required digits minlength=10 maxlength=10" name="phonenumber">
+            <span class="invalid_feedback"> Input correct Phone Number </span>
+        </div>
+        <div class="form-group">
+            <input type="password" data-role="input" data-prepend="<span class='mif-key'>" placeholder="Password" data-validate="required minlength=8" name="password">
+            <span class="invalid_feedback"> Password must be 8 char long </span>
+        </div>
+        <div class="form-group">
+            <input type="password" data-role="input" data-prepend="<span class='mif-key'>" placeholder=" Repeat Password" data-validate="required minlength=8 compare=password" name="pass2">
+            <span class="invalid_feedback"> Password must match</span>
+        </div>
+        <div class="form-group">
+            <select data-role="select" name="branch">
+                <option value="ce">Civil Engg</option>
+                <option value="ch">Chemical Engg</option>
+                <option value="cs">Computer Engg</option>
+                <option value="ec">Electronics Engg</option>
+                <option value="ee">Electrical Engg</option>
+                <option value="in">Instrumentation Engg</option>
+                <option value="me">Mechanical Engg</option>
+            </select>
+        </div>
+        <p style="text-align: center; font-size:.9em; color:#ce352c; display: none;" id="dupuserjs"> Duplicate username found !!! </p>
+        <p style="text-align: center; font-size:.9em; color:#ce352c; display: none;" id="dupdevjs"> Duplicate device found !!! </p>
+        <p style="text-align: center; font-size:.9em; color:#ce352c; display: none;" id="dupphonejs"> Duplicate phone or email found !!! </p>
+        <p style="text-align: center; font-size:.9em; color:#ce352c; display: none;" id="serverissueregjs"> Server issue, Please try again !!! </p>
+        <p style="text-align: center; font-size:.9em; color: green; display: none;" id="newuserregjs"> Congrats, You are registered !!! </p>
+        <div class="form-group mt-10">
+            <input type="checkbox" data-role="checkbox" data-caption="Remember me" class="place-right">
+            <button type="submit" class="button">Register</button>
+        </div>
+    </form>
+    <script>
+    $(window).bind("load", function() {
+        $("#registrationjs").fadeIn(200);
+    })
+
+
+    function invalidForm() {
+        var form = $(this);
+        form.addClass("ani-ring");
+        setTimeout(function() {
+            form.removeClass("ani-ring");
+        }, 1000);
+    }
+
+
+    function firstregjs() {
+        var base_url = window.location.origin;
+        window.location.replace(base_url + "/first_time_registration");
+    }
+
+
+
+    function validateregForm() {
+        var form = $('#registrationjs');
+        var post_data = $("#registrationjs").serializeArray();
+        $.post('/registration', post_data, function(data, e) {
+            var data_json = JSON.parse(data);
+            if (data_json.form_success) {
+                setTimeout(function() {
+                    $("#newuserregjs").fadeIn(1000);
+                    $("#newuserregjs").delay(1000).fadeOut(1000);
+                    setTimeout(function(){
+                        firstregjs();
+                    }, 3000)
+                }, 100);
+            } else {
+                if (data_json.form_dupname) {
+                    form.addClass("ani-ring");
+                    setTimeout(function() {
+                        $("#dupuserjs").fadeIn(1000);
+                        setTimeout(function() {
+                            $("#dupuserjs").fadeOut(1000);
+                        }, 5000);
+                        form.removeClass("ani-ring");
+                    }, 100);
+                } else {
+                    if (data_json.form_dupphone) {
+                        form.addClass("ani-ring");
+                        setTimeout(function() {
+                            $("#dupphonejs").fadeIn(1000);
+                            setTimeout(function() {
+                                $("#dupphonejs").fadeOut(1000);
+                            }, 5000);
+                            form.removeClass("ani-ring");
+                        }, 100);
+                    } else {
+                        if (data_json.form_dupdev) {
+                            form.addClass("ani-ring");
+                            setTimeout(function() {
+                                $("#dupdevjs").fadeIn(1000);
+                                setTimeout(function() {
+                                    $("#dupdevjs").fadeOut(1000);
+                                }, 5000);
+                                form.removeClass("ani-ring");
+                            }, 100);
+                        } else {
+                            form.addClass("ani-ring");
+                            setTimeout(function() {
+                                $("#serverissueregjs").fadeIn(1000);
+                                setTimeout(function() {
+                                    $("#serverissueregjs").fadeOut(1000);
+                                }, 5000);
+                                form.removeClass("ani-ring");
+                            }, 100);
+                        }
+                    }
+                }
+            }
+        });
+    }
+    </script>
+</body>
+
+</html>

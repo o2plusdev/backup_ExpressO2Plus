@@ -1,0 +1,114 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+    <style>
+        html, body {
+      background: #242424;;
+      display: flex;
+      width: 100%;
+      height: auto;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-form {
+            width: 350px;
+            height: auto;
+    }
+    
+    </style>
+</head>
+
+<body class="h-vh-100">
+    <form class="login-form bg-white p-6 mx-auto border bd-default win-shadow" data-role="validator" action="javascript:" data-clear-invalid="2000" data-on-error-form="invalidForm" data-on-validate-form="validateloginForm" id="loginjs" style="display: none;">
+        <span id="lockjs" class="mif-paper-plane fg-blue mif-5x place-right" style="margin-top: 5px; right: 1%;"></span>
+        <h2> 02Plus </h2>
+        <hr class="thin mt-4 mb-4 bg-white">
+        <div class="form-group">
+            <input type="text" data-role="input" data-prepend="<span class='mif-user'>" placeholder="Username" data-validate="required minlength=5" name="username">
+            <span class="invalid_feedback"> Username must be 5 char long </span>
+        </div>
+        <div class="form-group">
+            <input type="password" data-role="input" data-prepend="<span class='mif-key'>" placeholder="Password" data-validate="required minlength=8" name="password">
+            <span class="invalid_feedback"> Password must be 8 char long </span>
+        </div>
+        <p style="text-align: center; font-size:.9em; color:#ce352c; display: none;" id="wrongpswdjs"> Password is wrong !!! </p>
+        <p style="text-align: center; font-size:.9em; color:#ce352c; display: none;" id="nouserjs"> Username not found !!! </p>
+        <p style="text-align: center; font-size:.9em; color:#ce352c; display: none;" id="duplogjs"> Duplicate login found !!! </p>
+        <p style="text-align: center; font-size:.9em; color:#ce352c; display: none;" id="serverissueloginjs"> Server issue, Please try again !!! </p>
+        <p style="text-align: center; font-size:.9em; color:green; display: none;" id="validpswdjs"> Logging user. Please wait !!! </p>
+        <div class="form-group mt-10">
+            <input type="checkbox" data-role="checkbox" data-caption="Remember me" class="place-right">
+            <button class="button">Login</button>
+        </div>
+    </form>
+    <script>
+    function invalidForm() {
+        var form = $(this);
+        form.addClass("ani-ring");
+        setTimeout(function() {
+            form.removeClass("ani-ring");
+        }, 1000);
+    }
+
+    $(window).bind("load", function() {
+        $("#loginjs").fadeIn(200);
+    })
+
+
+    function validateloginForm() {
+        var form = $('#loginjs');
+        post_data = $("#loginjs").serializeArray();
+        $.post('/login', post_data, function(data, e) {
+            data_json = JSON.parse(data);
+            console.log(data_json);
+            if (data_json.form_ver == 'invalid user') {
+                document.getElementById("loginjs").reset();
+                form.addClass("ani-ring");
+                setTimeout(function() {
+                    $("#nouserjs").fadeIn(1000);
+                    setTimeout(function() {
+                        $("#nouserjs").fadeOut(1000);
+                    }, 5000);
+                    form.removeClass("ani-ring");
+                }, 100);
+            } else {
+                if (data_json.form_ver == 'dup device') {
+                    document.getElementById("loginjs").reset();
+                    form.addClass("ani-ring");
+                    setTimeout(function() {
+                        $("#duplogjs").fadeIn(1000);
+                        setTimeout(function() {
+                            $("#duplogjs").fadeOut(1000);
+                        }, 5000);
+                        form.removeClass("ani-ring");
+                    }, 100);
+                } else {
+                    if (data_json.form_ver == 'valid pswd') {
+                        $("#validpswdjs").fadeIn(300);
+                        window.location.replace(data_json.form_redirect)
+                    } else {
+                        document.getElementById("loginjs").reset();
+                        form.addClass("ani-ring");
+                        setTimeout(function() {
+                            $("#wrongpswdjs").fadeIn(1000);
+                            setTimeout(function() {
+                                $("#wrongpswdjs").fadeOut(1000);
+                            }, 5000);
+                            form.removeClass("ani-ring");
+                        }, 100);
+                    }
+                }
+            }
+        });
+    }
+    </script>
+</body>
+
+</html>

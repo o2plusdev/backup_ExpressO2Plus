@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="css/bootstrap.min.css" id="bootstrap-css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet" type="text/css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap" rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
+    <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
+    <script src="https://momentjs.com/downloads/moment.js"></script>
+    <style type="text/css">
+    body {
+        background: rgba(36, 36, 36);
+    }
+
+    .emp-profile {
+        padding: 3%;
+        margin-top: 5%;
+        margin-bottom: 5%;
+        border-radius: 0.5rem;
+        background: #fff;
+    }
+
+    .profile-img {
+        text-align: center;
+
+    }
+
+    .profile-img img {
+        width: 70%;
+        height: 100%;
+    }
+
+    .profile-img .file {
+        position: relative;
+        overflow: hidden;
+        margin-top: -20%;
+        width: 70%;
+        border: none;
+        border-radius: 0;
+        font-size: 15px;
+        background: #212529b8;
+    }
+
+    .profile-img .file input {
+        position: absolute;
+        opacity: 0;
+        right: 0;
+        top: 0;
+    }
+
+    .profile-head h5 {
+        color: #333;
+    }
+
+    .profile-head h6 {
+        color: #0062cc;
+    }
+
+    .profile-edit-btn {
+        border: none;
+        border-radius: 1.5rem;
+        width: 70%;
+        padding: 2%;
+        font-weight: 600;
+        color: #6c757d;
+        cursor: pointer;
+    }
+
+    .proile-rating {
+        font-size: 12px;
+        color: #818182;
+        margin-top: 5%;
+    }
+
+    .proile-rating span {
+        color: #495057;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .profile-head .nav-tabs {
+        margin-bottom: 5%;
+    }
+
+    .profile-head .nav-tabs .nav-link {
+        font-weight: 600;
+        border: none;
+    }
+
+    .profile-head .nav-tabs .nav-link.active {
+        border: none;
+        border-bottom: 2px solid #0062cc;
+    }
+
+    .button {
+        background-color: #55aa55;
+        transition-duration: 0.4s;
+        border: none;
+        color: white;
+        padding: 5px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .button:hover {
+        background-color: #4d9b4f;
+        /* Green */
+        color: white;
+    }
+
+    .animated-modal {
+        max-width: 550px;
+        border-radius: 4px;
+        overflow: hidden;
+        transform: translateY(-50px);
+        transition: all .7s;
+    }
+
+    .animated-modal h2,
+    .animated-modal p {
+        transform: translateY(-50px);
+        opacity: 0;
+
+        transition-property: transform, opacity;
+        transition-duration: .4s;
+    }
+
+    /* Final state */
+    .fancybox-slide--current .animated-modal,
+    .fancybox-slide--current .animated-modal h2,
+    .fancybox-slide--current .animated-modal p {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    /* Reveal content with different delays */
+    .fancybox-slide--current .animated-modal h2 {
+        transition-delay: .1s;
+    }
+
+    .fancybox-slide--current .animated-modal p {
+        transition-delay: .3s;
+    }
+    </style>
+    <style type="text/css">
+    .main {
+        display: flex;
+        flex-direction: column;
+        font-family: "Poppins", sans-serif;
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+
+
+    .menu {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        height: 420px;
+        position: relative;
+        justify-content: center;
+    }
+
+    .menu__item {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        width: 140px;
+        height: 140px;
+        cursor: pointer;
+        background: transparent;
+        color: white;
+        z-index: 100;
+        transition: 150ms;
+    }
+
+    .menu__item:hover .menu__icon {
+        animation: icon 0.1s 4;
+    }
+
+    .menu__item:hover .menu__span {
+        transform: translateY(-17px);
+        transition: 300ms;
+    }
+
+    .menu__icon {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+        margin: 2px;
+    }
+
+    .menu__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        position: relative;
+        width: 100%;
+        height: 18px;
+        overflow: hidden;
+    }
+
+    @keyframes icon {
+        0% {
+            transform: rotateZ(-10deg);
+        }
+
+        100% {
+            transform: rotateZ(10deg);
+        }
+    }
+
+    .webhomecss {
+        top: 60.5px;
+        display: flex;
+        justify-content: center;
+    }
+    </style>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-light" id="web_header" style="background-color: rgba(36, 36, 36); border-bottom-color: #ea2c5a; border-bottom-width: 2px; border-bottom-style: solid; padding: .05rem 1rem;">
+        <a class="navbar-brand" href="#" style="color: white; font-size: 25px; font-family: 'Courier New', monospace; color: #50ace4; "><img height="30px" src="logo.png" width="35px" style="margin-right: 10px; margin-top: -4px;">Plus</a>
+        <button aria-controls="navbars" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarContent" data-toggle="collapse" onclick="menu_button()" style="outline: none; border: none;" type="button"><img height="30px" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGlk%0D%0APSJzdmdfMSIgZmlsbD0ibm9uZSIgZD0ibTAsMGw0OCwwbDAsNDhsLTQ4LDBsMCwtNDh6Ii8+CiAg%0D%0APHBhdGggZmlsbD0iI2ZmZmZmZiIgaWQ9InN2Z18yIiBkPSJtMjQsMTZjMi4yMSwwIDQsLTEuNzkg%0D%0ANCwtNHMtMS43OSwtNCAtNCwtNHMtNCwxLjc5IC00LDRzMS43OSw0IDQsNHptMCw0Yy0yLjIxLDAg%0D%0ALTQsMS43OSAtNCw0czEuNzksNCA0LDRzNCwtMS43OSA0LC00cy0xLjc5LC00IC00LC00em0wLDEy%0D%0AYy0yLjIxLDAgLTQsMS43OSAtNCw0czEuNzksNCA0LDRzNCwtMS43OSA0LC00cy0xLjc5LC00IC00%0D%0ALC00eiIvPgogPC9nPgo8L3N2Zz4=" width="30px"></button>
+    </nav>
+    <div id="base_page_container" style="top:55px">
+        <div class="webhomecss" id="webhomejs">
+            <div class="tiles-grid tiles-group size-2">
+                <div id="1" style="display: none;" data-role="tile" class="bg-indigo" data-size="wide" onclick="playlist_redirect('mathematics');">
+                    <span class="mif-calculator icon"></span>
+                    <span class="branding-bar"> Mathematics </span>
+                    <span class="badge-bottom" id="mathematics"></span>
+                </div>
+                <div id="2" style="display: none;" data-role="tile" class="bg-cyan" data-size="wide" onclick="playlist_redirect('network_theory');">
+                    <span class="mif-power icon"></span>
+                    <span class="branding-bar">Network Theory</span>
+                    <span class="badge-bottom" id="network_theory"></span>
+                </div>
+                <div id="3" style="display: none;" data-role="tile" class="bg-orange" data-size="wide" onclick="playlist_redirect('digital_electronics');">
+                    <span class="mif-satellite icon"></span>
+                    <span class="branding-bar">Digital Electronics</span>
+                    <span class="badge-bottom" id="digital_electronics"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div id="menu_container" style="width: 100%; height: 100%; z-index: 5000; position: absolute; display: none; top: 0px">
+        <div class="main" id="menu_list">
+            <div class="menu" style="margin-top: 0px; margin-bottom: 0px;">
+                <div class="menu__item" id="0-0" onclick="menu_redirect('home')">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGZp%0D%0AbGw9IiNmZmZmZmYiIGlkPSJzdmdfMSIgZD0ibTIwLDQwbDAsLTEybDgsMGwwLDEybDEwLDBsMCwt%0D%0AMTZsNiwwbC0yMCwtMThsLTIwLDE4bDYsMGwwLDE2bDEwLDB6Ii8+CiA8L2c+Cjwvc3ZnPg==">
+                    <div class="menu__content">
+                        <span class="menu__span">HOME</span><span class="menu__span">HOME</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="1-0" onclick="menu_redirect('stats')">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGlk%0D%0APSJzdmdfMSIgZmlsbD0ibm9uZSIgZD0ibTAsMGw0OCwwbDAsNDhsLTQ4LDBsMCwtNDh6Ii8+CiAg%0D%0APHBhdGggZmlsbD0iI2ZmZmZmZiIgaWQ9InN2Z18yIiBkPSJtMjAsNDBsOCwwbDAsLTMybC04LDBs%0D%0AMCwzMnptLTEyLDBsOCwwbDAsLTE2bC04LDBsMCwxNnptMjQsLTIybDAsMjJsOCwwbDAsLTIybC04%0D%0ALDB6Ii8+CiA8L2c+Cjwvc3ZnPg==">
+                    <div class="menu__content">
+                        <span class="menu__span">STATS</span><span class="menu__span">STATS</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="0-1" onclick="menu_redirect('lecture')">
+                    <img class="menu__icon" src="lecture.png">
+                    <div class="menu__content">
+                        <span class="menu__span">LECTURES</span><span class="menu__span">LECTURES</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="1-1" onclick="menu_redirect('likes')">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGlk%0D%0APSJzdmdfMSIgZmlsbD0ibm9uZSIgZD0ibTAsMGw0OCwwbDAsNDhsLTQ4LDBsMCwtNDh6Ii8+CiAg%0D%0APHBhdGggZmlsbD0iI2ZmZmZmZiIgaWQ9InN2Z18yIiBkPSJtMjQsNDIuN2wtMi45LC0yLjYzYy0x%0D%0AMC4zLC05LjM1IC0xNy4xLC0xNS41MiAtMTcuMSwtMjMuMDdjMCwtNi4xNyA0LjgzLC0xMSAxMSwt%0D%0AMTFjMy40OCwwIDYuODIsMS42MiA5LDQuMTdjMi4xOCwtMi41NSA1LjUyLC00LjE3IDksLTQuMTdj%0D%0ANi4xNywwIDExLDQuODMgMTEsMTFjMCw3LjU1IC02LjgsMTMuNzIgLTE3LjEsMjMuMDdsLTIuOSwy%0D%0ALjYzeiIvPgogPC9nPgo8L3N2Zz4=">
+                    <div class="menu__content">
+                        <span class="menu__span">LIKES</span><span class="menu__span">LIKES</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="0-2" onclick="menu_redirect('qna')">
+                    <img class="menu__icon" src="qna.png">
+                    <div class="menu__content">
+                        <span class="menu__span">QnA</span><span class="menu__span">QnA</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="1-2" onclick="menu_redirect('chats')">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGZp%0D%0AbGw9IiNmZmZmZmYiIGlkPSJzdmdfMSIgZD0ibTQuMDIsNDJsNDEuOTgsLTE4bC00MS45OCwtMThs%0D%0ALTAuMDIsMTRsMzAsNGwtMzAsNGwwLjAyLDE0eiIvPgogPC9nPgo8L3N2Zz4=">
+                    <div class="menu__content">
+                        <span class="menu__span">CHATS</span><span class="menu__span">CHATS</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="2-2" onclick="menu_redirect('materials')">
+                    <img class="menu__icon" src="study_materials.png">
+                    <div class="menu__content">
+                        <span class="menu__span">MATERIALS</span><span class="menu__span">MATERIALS</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="0-3">
+                    <img class="menu__icon" onclick="menu_back()" src="close.png" style="padding: 3px;">
+                    <div class="menu__content">
+                        <span class="menu__span">CLOSE</span><span class="menu__span">CLOSE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    function menu_button() {
+        $("#web_header").fadeToggle(300);
+        $("#base_page_container").fadeToggle(300);
+        $("#menu_container").delay(400).fadeToggle(300);
+    }
+
+    function menu_back() {
+        $("#web_header").delay(400).fadeToggle(300);
+        $("#base_page_container").delay(400).fadeToggle(300);
+        $("#menu_container").fadeToggle(300);
+    }
+
+    window.onload = function(){
+        $("#1").fadeIn(500);
+        $("#2").delay(250).fadeIn(500);
+        $("#3").delay(500).fadeIn(750);
+    }
+
+    function playlist_redirect(subject) {
+        window.location.replace(window.location.origin + "/playlist?subject=" + subject)
+    }
+
+    function menu_redirect(redirect_id) {
+        var base_url = window.location.origin;
+        window.location.replace(base_url + "/" + redirect_id);
+    }
+    </script>
+    </body>
+
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        html, body {
+      background: rgba(36, 36, 36);
+      display: flex;
+      width: 100%;
+      height: auto;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-form {
+            width: 350px;
+            height: auto;
+    }
+    
+    </style>
+</head>
+
+<body class="h-vh-100">
+    <form class="login-form bg-white p-6 mx-auto border bd-default win-shadow" data-role="validator" action="javascript:" data-clear-invalid="2000" data-on-error-form="invalidForm" data-on-validate-form="validateloginForm" id="loginjs" style="display: none;">
+        <h2 style="text-align: center;"> O2Plus </h2>
+        <div class="form-group">
+            <span id="lockjs" class="mif-dropbox mif-5x fg-blue pos-bottom-center" style="display: none;"></span>
+        </div>
+         <p class="text-warning" style="text-align: center; font-size:.9em; color:#ce352c"> You have completed registration on O2Plus. For quick acceptance of your application, please contact admin via Telegram : @o2plus_admin </p>
+    </form>
+    <script type="text/javascript">
+    var form = $("#loginjs");
+    form.addClass("ani-ring");
+    setTimeout(function() {
+        form.removeClass("ani-ring");
+    }, 2000);
+    $("#loginjs").fadeIn(1000);
+    $("#lockjs").fadeIn(2500);
+    </script>
+    <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
+</body>
+
+</html>

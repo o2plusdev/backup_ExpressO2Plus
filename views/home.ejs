@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="css/bootstrap.min.css" id="bootstrap-css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet" type="text/css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap" rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <style type="text/css">
+    body {
+        background: rgba(36, 36, 36);
+    }
+
+    .emp-profile {
+        padding: 3%;
+        margin-top: 5%;
+        margin-bottom: 5%;
+        border-radius: 0.5rem;
+        background: #fff;
+    }
+
+    .profile-img {
+        text-align: center;
+
+    }
+
+    .profile-img img {
+        width: 70%;
+        height: 100%;
+        border-radius: 2%;
+    }
+
+    .profile-img .file {
+        position: relative;
+        overflow: hidden;
+        margin-top: -20%;
+        width: 70%;
+        border: none;
+        border-radius: 0;
+        font-size: 15px;
+        background: #212529b8;
+    }
+
+    .profile-img .file input {
+        position: absolute;
+        opacity: 0;
+        right: 0;
+        top: 0;
+    }
+
+    .profile-head h5 {
+        color: #333;
+    }
+
+    .profile-head h6 {
+        color: #0062cc;
+    }
+
+    .profile-edit-btn {
+        border: none;
+        border-radius: 1.5rem;
+        width: 70%;
+        padding: 2%;
+        font-weight: 600;
+        color: #6c757d;
+        cursor: pointer;
+    }
+
+    .proile-rating {
+        font-size: 12px;
+        color: #818182;
+        margin-top: 5%;
+    }
+
+    .proile-rating span {
+        color: #495057;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .profile-head .nav-tabs {
+        margin-bottom: 5%;
+    }
+
+    .profile-head .nav-tabs .nav-link {
+        font-weight: 600;
+        border: none;
+    }
+
+    .profile-head .nav-tabs .nav-link.active {
+        border: none;
+        border-bottom: 2px solid #0062cc;
+    }
+
+    .button {
+        background-color: #55aa55;
+        transition-duration: 0.4s;
+        border: none;
+        color: white;
+        padding: 5px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .button:hover {
+        background-color: #4d9b4f;
+        /* Green */
+        color: white;
+    }
+
+    .animated-modal {
+        max-width: 550px;
+        border-radius: 4px;
+        overflow: hidden;
+        transform: translateY(-50px);
+        transition: all .10s;
+    }
+
+    .animated-modal h2,
+    .animated-modal p {
+        transform: translateY(-50px);
+        opacity: 0;
+
+        transition-property: transform, opacity;
+        transition-duration: .7s;
+    }
+
+    /* Final state */
+    .fancybox-slide--current .animated-modal,
+    .fancybox-slide--current .animated-modal h2,
+    .fancybox-slide--current .animated-modal p {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    /* Reveal content with different delays */
+    .fancybox-slide--current .animated-modal h2 {
+        transition-delay: .4s;
+    }
+
+    .fancybox-slide--current .animated-modal p {
+        transition-delay: .6s;
+    }
+    </style>
+    <style type="text/css">
+    .main {
+        display: flex;
+        flex-direction: column;
+        font-family: "Poppins", sans-serif;
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+
+
+    .menu {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        height: 420px;
+        position: relative;
+        justify-content: center;
+    }
+
+    .menu__item {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        width: 140px;
+        height: 140px;
+        cursor: pointer;
+        background: transparent;
+        color: white;
+        z-index: 100;
+        transition: 150ms;
+    }
+
+    .menu__item:hover .menu__icon {
+        animation: icon 0.1s 4;
+    }
+
+    .menu__item:hover .menu__span {
+        transform: translateY(-17px);
+        transition: 300ms;
+    }
+
+    .menu__icon {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+        margin: 2px;
+    }
+
+    .menu__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        position: relative;
+        width: 100%;
+        height: 18px;
+        overflow: hidden;
+    }
+
+    @keyframes icon {
+        0% {
+            transform: rotateZ(-10deg);
+        }
+
+        100% {
+            transform: rotateZ(10deg);
+        }
+    }
+    </style>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-light" id="web_header" style="background-color: rgba(36, 36, 36); border-bottom-color: #ea2c5a; border-bottom-width: 2px; border-bottom-style: solid; padding: .05rem 1rem;">
+        <a class="navbar-brand" href="#" style="color: white; font-size: 25px; font-family: 'Courier New', monospace; color: #50ace4; "><img height="30px" src="logo.png" width="35px" style="margin-right: 10px; margin-top: -4px;">Plus</a>
+        <button aria-controls="navbars" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarContent" data-toggle="collapse" onclick="menu_button()" style="outline: none; border: none;" type="button"><img height="30px" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGlk%0D%0APSJzdmdfMSIgZmlsbD0ibm9uZSIgZD0ibTAsMGw0OCwwbDAsNDhsLTQ4LDBsMCwtNDh6Ii8+CiAg%0D%0APHBhdGggZmlsbD0iI2ZmZmZmZiIgaWQ9InN2Z18yIiBkPSJtMjQsMTZjMi4yMSwwIDQsLTEuNzkg%0D%0ANCwtNHMtMS43OSwtNCAtNCwtNHMtNCwxLjc5IC00LDRzMS43OSw0IDQsNHptMCw0Yy0yLjIxLDAg%0D%0ALTQsMS43OSAtNCw0czEuNzksNCA0LDRzNCwtMS43OSA0LC00cy0xLjc5LC00IC00LC00em0wLDEy%0D%0AYy0yLjIxLDAgLTQsMS43OSAtNCw0czEuNzksNCA0LDRzNCwtMS43OSA0LC00cy0xLjc5LC00IC00%0D%0ALC00eiIvPgogPC9nPgo8L3N2Zz4=" width="30px"></button>
+    </nav>
+    <div style="display: none;" id="animatedModal" class="animated-modal">
+        <h2>Message from Admin</h2>
+        <p>Contact admin to speed up your application or to solve any other problem !!!</p>
+        <input readonly style="display: inline; width: 60%; font-size: 15px;" id="telegramid" value="Telegram : @o2plus_admin"><button id="telegramidbtn" type="button" class="button" onclick="copytelegram('telegramid')" style="width: 30%; margin-left: 15px; display: inline;">copy</button>
+        <br><br>
+        <input readonly style="display: inline; width: 60%; font-size: 15px;" id="telegramidgrp" value="Tele Group : @o2plusmain"><button id="telegramidgrpbtn" type="button" class="button" onclick="copytelegram('telegramidgrp')" style="width: 30%; margin-left: 15px; display: inline;">copy</button>
+        <br><br>
+        <input readonly style="display: inline; width: 60%; font-size: 15px;" id="telegramph" value="Telegram : +1 4156891242"><button id="whatsappidbtn" type="button" class="button" onclick="copytelegram('telegramph')" style="width: 30%; margin-left: 15px; display: inline;">copy</button>
+    </div>
+    <div class="container emp-profile" style="width:100%; position: relative; top:30px" id="web_container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="profile-img">
+                    <img id='profileimage' src="profile.jpg" style="height: 236.22px;" alt="">
+                    <div class="file btn btn-lg btn-primary">
+                        Change Photo
+                        <input id='profileimginput' type="file" name="file">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" style="text-align: center;">
+                <div class="profile-head">
+                    <h5 id="username_tophead"> </h5>
+                    <h6><strong> Status : <span id="student_level"> </span> </strong></h6>
+                    <p class="proile-rating">RANKING : <span id="rank"></span></p>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist"></ul>
+                </div>
+            </div>
+        </div>
+        <br>
+        <table style="width: 100%; text-align: center;">
+            <tr>
+                <td>
+                    <p style="column-width: 150px; font-size: 17px; padding-top: 5px; text-align: left; font-style: bold;">Username</p>
+                </td>
+                <td><input style="column-width: 150px; font-size: 17px; text-align: center;" disabled="disabled" id="usernamebox"></td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="column-width: 150px; font-size: 17px; padding-top: 5px;text-align: left; font-style: bold;">Application Status
+                </td>
+                <td><input style="column-width: 150px; font-size: 17px; text-align: center;" disabled="disabled" id="application_status">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="column-width: 150px; font-size: 17px; padding-top: 5px;text-align: left; font-style: bold;">
+                        Branch
+                </td>
+                <td>
+                    <select id="branchbox" name="branch" style="column-width: 150px; font-size: 17px; text-align-last: center; width: 100%;" disabled="disabled">
+                        <option value="ce">Civil Engg</option>
+                        <option value="ch">Chemical Engg</option>
+                        <option value="cs">Computer Engg</option>
+                        <option value="ec">Electronics Engg</option>
+                        <option value="ee">Electrical Engg</option>
+                        <option value="in">Instrumentation Engg</option>
+                        <option value="me">Mechanical Engg</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="column-width: 150px; font-size: 17px; padding-top: 5px;text-align: left; font-style: bold;">
+                        Lecture Quality
+                </td>
+                <td>
+                    <select id="qualitybox" name="quality" style="column-width: 150px; font-size: 17px; text-align-last: center; width: 100%;" disabled>
+                        <option value="highest">Highest</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="column-width: 150px; font-size: 17px; padding-top: 5px;text-align: left; font-style: bold;">Phone Number
+                </td>
+                <td><input id="phonebox" style="column-width: 150px; font-size: 17px; text-align: center;" disabled="disabled"></td>
+            </tr>
+        </table>
+        <div style="text-align: center; margin: 1rem;">
+            <a data-fancybox data-animation-duration="700" data-src="#animatedModal" href="javascript:;" class="btn btn-primary" id="contact_admin-button">Contact Admin</a>
+        </div>
+    </div>
+    <div id="menu_container" style="width: 100%; height: 100%; z-index: 5000; position: absolute; display: none; top: 0px">
+        <div class="main" id="menu_list">
+            <div class="menu" style="margin-top: 0px; margin-bottom: 0px;">
+                <div class="menu__item" id="0-0" onclick="menu_redirect('home')">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGZp%0D%0AbGw9IiNmZmZmZmYiIGlkPSJzdmdfMSIgZD0ibTIwLDQwbDAsLTEybDgsMGwwLDEybDEwLDBsMCwt%0D%0AMTZsNiwwbC0yMCwtMThsLTIwLDE4bDYsMGwwLDE2bDEwLDB6Ii8+CiA8L2c+Cjwvc3ZnPg==">
+                    <div class="menu__content">
+                        <span class="menu__span">HOME</span><span class="menu__span">HOME</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="1-0" onclick="menu_redirect('stats')">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGlk%0D%0APSJzdmdfMSIgZmlsbD0ibm9uZSIgZD0ibTAsMGw0OCwwbDAsNDhsLTQ4LDBsMCwtNDh6Ii8+CiAg%0D%0APHBhdGggZmlsbD0iI2ZmZmZmZiIgaWQ9InN2Z18yIiBkPSJtMjAsNDBsOCwwbDAsLTMybC04LDBs%0D%0AMCwzMnptLTEyLDBsOCwwbDAsLTE2bC04LDBsMCwxNnptMjQsLTIybDAsMjJsOCwwbDAsLTIybC04%0D%0ALDB6Ii8+CiA8L2c+Cjwvc3ZnPg==">
+                    <div class="menu__content">
+                        <span class="menu__span">STATS</span><span class="menu__span">STATS</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="0-1" onclick="menu_redirect('lecture')">
+                    <img class="menu__icon" src="lecture.png">
+                    <div class="menu__content">
+                        <span class="menu__span">LECTURES</span><span class="menu__span">LECTURES</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="1-1" onclick="menu_redirect('likes')">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGlk%0D%0APSJzdmdfMSIgZmlsbD0ibm9uZSIgZD0ibTAsMGw0OCwwbDAsNDhsLTQ4LDBsMCwtNDh6Ii8+CiAg%0D%0APHBhdGggZmlsbD0iI2ZmZmZmZiIgaWQ9InN2Z18yIiBkPSJtMjQsNDIuN2wtMi45LC0yLjYzYy0x%0D%0AMC4zLC05LjM1IC0xNy4xLC0xNS41MiAtMTcuMSwtMjMuMDdjMCwtNi4xNyA0LjgzLC0xMSAxMSwt%0D%0AMTFjMy40OCwwIDYuODIsMS42MiA5LDQuMTdjMi4xOCwtMi41NSA1LjUyLC00LjE3IDksLTQuMTdj%0D%0ANi4xNywwIDExLDQuODMgMTEsMTFjMCw3LjU1IC02LjgsMTMuNzIgLTE3LjEsMjMuMDdsLTIuOSwy%0D%0ALjYzeiIvPgogPC9nPgo8L3N2Zz4=">
+                    <div class="menu__content">
+                        <span class="menu__span">LIKES</span><span class="menu__span">LIKES</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="0-2" onclick="menu_redirect('qna')">
+                    <img class="menu__icon" src="qna.png">
+                    <div class="menu__content">
+                        <span class="menu__span">QnA</span><span class="menu__span">QnA</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="1-2" onclick="menu_redirect('chats')">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGZp%0D%0AbGw9IiNmZmZmZmYiIGlkPSJzdmdfMSIgZD0ibTQuMDIsNDJsNDEuOTgsLTE4bC00MS45OCwtMThs%0D%0ALTAuMDIsMTRsMzAsNGwtMzAsNGwwLjAyLDE0eiIvPgogPC9nPgo8L3N2Zz4=">
+                    <div class="menu__content">
+                        <span class="menu__span">CHATS</span><span class="menu__span">CHATS</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="2-2" onclick="menu_redirect('materials')">
+                    <img class="menu__icon" src="study_materials.png">
+                    <div class="menu__content">
+                        <span class="menu__span">MATERIALS</span><span class="menu__span">MATERIALS</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="0-3">
+                    <img class="menu__icon" onclick="menu_back()" src="close.png" style="padding: 3px;">
+                    <div class="menu__content">
+                        <span class="menu__span">CLOSE</span><span class="menu__span">CLOSE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    function menu_button() {
+        $("#web_header").fadeToggle(300);
+        $("#web_container").fadeToggle(300);
+        $("#menu_container").delay(400).fadeToggle(300);
+    }
+
+    function menu_back() {
+        $("#web_header").delay(400).fadeToggle(300);
+        $("#web_container").delay(400).fadeToggle(300);
+        $("#menu_container").fadeToggle(300);
+    }
+    // window.onload does not work in webview
+    window.addEventListener('load', (event) => {
+        $("#username_tophead").text('<%= username %>');
+        $("#usernamebox").val('<%= username %>');
+        $("#branchbox").val('<%= branch %>');
+        $("#phonebox").val('<%= phonenumber %>');
+        $("#qualitybox").val('<%= lec_quality %>');
+        var rank = '<%= rank %>';
+        var total_users = '<%= total_users %>';
+        $("#rank").text(rank);
+        var percentile = rank / total_users;
+        var user_levels = ['Bronze', 'Silver', 'Ruby', 'Sapphire', 'Emerald', 'Gold', 'Diamond', 'Platinum'];
+        $("#student_level").text(user_levels[Math.round(percentile / 0.125)]);
+        if (<%= userblocked %>) {
+            $('#application_status').val('Under Review');
+            $('#application_status').css('color', 'red');
+            $("#contact_admin-button").trigger("click");
+        } else {
+            $('#application_status').val('Approved');
+            $('#application_status').css('color', 'green');
+        }
+        $('#branchbox').width($('#phonebox').width());
+        $('#branchbox').height($('#phonebox').height());
+        $('#qualitybox').width($('#phonebox').width());
+        $('#qualitybox').height($('#phonebox').height());
+        window.location.replace("https://whatwebcando.today/screen-orientation.html");
+    });
+
+
+
+
+
+
+
+
+
+
+
+    function readFile() {
+        if (this.files && this.files[0]) {
+            var FR = new FileReader();
+            FR.addEventListener("load", function(e) {
+                localStorage.setItem("profileimg", e.target.result);
+                document.getElementById("profileimage").src = e.target.result;
+            });
+            FR.readAsDataURL(this.files[0]);
+        }
+    }
+    document.getElementById("profileimginput").addEventListener("change", readFile);
+
+    if (localStorage.getItem("profileimg") !== null) {
+        document.getElementById("profileimage").src = localStorage.getItem("profileimg");
+    }
+
+
+    function copytelegram(copyidinfo) {
+        var copyText = document.getElementById(copyidinfo);
+        copyText.select();
+        document.execCommand("copy");
+        document.getElementById(copyidinfo + 'btn').textContent = 'copied';
+        setTimeout(function() {
+            document.getElementById(copyidinfo + 'btn').textContent = 'copy';
+        }, 1000);
+    }
+
+    document.addEventListener('copy', function(e) {
+        var text = window.getSelection().toString().split(' : ');
+        e.clipboardData.setData('text/plain', text[1]);
+        e.preventDefault();
+    });
+
+    ////////////////// changes after window load ///////////////////////
+
+
+    $(window).on("orientationchange", function(event) {
+        $('#branchbox').width($('#phonebox').width());
+        $('#branchbox').height($('#phonebox').height());
+        $('#qualitybox').width($('#phonebox').width());
+        $('#qualitybox').height($('#phonebox').height());
+    });
+
+    function menu_redirect(redirect_id) {
+        var base_url = window.location.origin;
+        window.location.replace(base_url + "/" + redirect_id);
+    }
+    </script>
+    </body>
+
+</html>

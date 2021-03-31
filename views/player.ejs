@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="https://vjs.zencdn.net/7.10.2/video-js.css" rel="stylesheet">
+    <script src="js/jquery.min.js">
+    </script>
+    <script src="https://vjs.zencdn.net/7.10.2/video.min.js">
+    </script>
+    <link href='https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css' rel='stylesheet'>
+    <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js'>
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="js/videojs-landscape-fullscreen.min.js"></script>
+    <style type="text/css">
+    .button_active {
+        color: #4267B2;
+    }
+
+    .video-js-responsive-container.vjs-hd {
+        padding-top: 56.25%;
+    }
+
+    .video-js-responsive-container.vjs-sd {
+        padding-top: 75%;
+    }
+
+    .video-js-responsive-container {
+        width: 100%;
+        position: relative;
+    }
+
+    .video-js-responsive-container .video-js {
+        height: 100% !important;
+        width: 100% !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    </style>
+    <style type="text/css">
+    .emp-profile {
+        padding: 3%;
+        margin-top: 5%;
+        margin-bottom: 5%;
+        border-radius: 0.5rem;
+        background: #fff;
+    }
+
+    .profile-img {
+        text-align: center;
+
+    }
+
+    .profile-img img {
+        width: 70%;
+        height: 100%;
+    }
+
+    .profile-img .file {
+        position: relative;
+        overflow: hidden;
+        margin-top: -20%;
+        width: 70%;
+        border: none;
+        border-radius: 0;
+        font-size: 15px;
+        background: #212529b8;
+    }
+
+    .profile-img .file input {
+        position: absolute;
+        opacity: 0;
+        right: 0;
+        top: 0;
+    }
+
+    .profile-head h5 {
+        color: #333;
+    }
+
+    .profile-head h6 {
+        color: #0062cc;
+    }
+
+    .profile-edit-btn {
+        border: none;
+        border-radius: 1.5rem;
+        width: 70%;
+        padding: 2%;
+        font-weight: 600;
+        color: #6c757d;
+        cursor: pointer;
+    }
+
+    .proile-rating {
+        font-size: 12px;
+        color: #818182;
+        margin-top: 5%;
+    }
+
+    .proile-rating span {
+        color: #495057;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .profile-head .nav-tabs {
+        margin-bottom: 5%;
+    }
+
+    .profile-head .nav-tabs .nav-link {
+        font-weight: 600;
+        border: none;
+    }
+
+    .profile-head .nav-tabs .nav-link.active {
+        border: none;
+        border-bottom: 2px solid #0062cc;
+    }
+
+    .button {
+        background-color: #55aa55;
+        transition-duration: 0.4s;
+        border: none;
+        color: white;
+        padding: 5px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .button:hover {
+        background-color: #4d9b4f;
+        /* Green */
+        color: white;
+    }
+
+    .animated-modal {
+        max-width: 550px;
+        border-radius: 4px;
+        overflow: hidden;
+        transform: translateY(-50px);
+        transition: all .7s;
+    }
+
+    .animated-modal h2,
+    .animated-modal p {
+        transform: translateY(-50px);
+        opacity: 0;
+
+        transition-property: transform, opacity;
+        transition-duration: .4s;
+    }
+
+    /* Final state */
+    .fancybox-slide--current .animated-modal,
+    .fancybox-slide--current .animated-modal h2,
+    .fancybox-slide--current .animated-modal p {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    /* Reveal content with different delays */
+    .fancybox-slide--current .animated-modal h2 {
+        transition-delay: .1s;
+    }
+
+    .fancybox-slide--current .animated-modal p {
+        transition-delay: .3s;
+    }
+    </style>
+    <style type="text/css">
+    .main {
+        display: flex;
+        flex-direction: column;
+        font-family: "Poppins", sans-serif;
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+
+
+    .menu {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        height: 420px;
+        position: relative;
+        justify-content: center;
+    }
+
+    .menu__item {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        width: 140px;
+        height: 140px;
+        cursor: pointer;
+        background: transparent;
+        color: white;
+        z-index: 100;
+        transition: 150ms;
+    }
+
+    .menu__item:hover .menu__icon {
+        animation: icon 0.1s 4;
+    }
+
+    .menu__item:hover .menu__span {
+        transform: translateY(-17px);
+        transition: 300ms;
+    }
+
+    .menu__icon {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+        margin: 2px;
+    }
+
+    .menu__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        position: relative;
+        width: 100%;
+        height: 18px;
+        overflow: hidden;
+    }
+
+    @keyframes icon {
+        0% {
+            transform: rotateZ(-10deg);
+        }
+
+        100% {
+            transform: rotateZ(10deg);
+        }
+    }
+    </style>
+</head>
+
+<body style="background-color: #242424;">
+    <nav class="navbar fixed-top navbar-expand-lg navbar-light" id="web_header" style="background-color: rgba(36, 36, 36); border-bottom-color: #ea2c5a; border-bottom-width: 2px; border-bottom-style: solid; padding: .05rem 1rem;">
+        <a class="navbar-brand" href="#" style="color: white; font-size: 25px; font-family: 'Courier New', monospace; color: #50ace4; "><img height="30px" src="logo.png" width="35px" style="margin-right: 10px; margin-top: -4px;">Plus</a>
+        <button aria-controls="navbars" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarContent" data-toggle="collapse" onclick="menu_button()" style="outline: none; border: none;" type="button"><img height="30px" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGlk%0D%0APSJzdmdfMSIgZmlsbD0ibm9uZSIgZD0ibTAsMGw0OCwwbDAsNDhsLTQ4LDBsMCwtNDh6Ii8+CiAg%0D%0APHBhdGggZmlsbD0iI2ZmZmZmZiIgaWQ9InN2Z18yIiBkPSJtMjQsMTZjMi4yMSwwIDQsLTEuNzkg%0D%0ANCwtNHMtMS43OSwtNCAtNCwtNHMtNCwxLjc5IC00LDRzMS43OSw0IDQsNHptMCw0Yy0yLjIxLDAg%0D%0ALTQsMS43OSAtNCw0czEuNzksNCA0LDRzNCwtMS43OSA0LC00cy0xLjc5LC00IC00LC00em0wLDEy%0D%0AYy0yLjIxLDAgLTQsMS43OSAtNCw0czEuNzksNCA0LDRzNCwtMS43OSA0LC00cy0xLjc5LC00IC00%0D%0ALC00eiIvPgogPC9nPgo8L3N2Zz4=" width="30px"></button>
+    </nav>
+    <div id="base_page_container" style="position: absolute; width: 100%; margin-top: 50.60px;">
+        <div class="wrapper">
+            <div class="video-js-responsive-container vjs-hd">
+                <video class="video-js vjs-default-skin vjs-big-play-centered" controls="" data-setup='{}' disablepictureinpicture="" id="videoplayer" nodownload preload="none">
+                    <source src="/test.mp4" type="video/mp4">
+                    <p class="vjs-no-js">Video load failed. Contact admin !!!</p>
+                </video>
+            </div>
+        </div>
+        <p style="color: #ea2c5a; text-align: center; padding-top: 22px; font-size: 22px"><span id="lec_name_container"></span></p>
+        <div class="container-fluid" id="icon_container" style="border-bottom-width: 1px; border-bottom-color: #424242; border-bottom-style: solid;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-1 col-sm-1">
+                    </div>
+                    <div class="col-xs-10 col-sm-10" style="display: flex; justify-content: center;">
+                        <div class="text-center" id="like_icon_container" onclick="toggle_like_button(); vote(true);" style="margin: 10px; color: #ea2c5a;">
+                            <span class="fa fa-thumbs-o-up" id="like_icon" style="font-size: 19px; color: white;"></span><br>
+                            <span id="like_value"></span>
+                        </div>
+                        <div class="text-center" id="dislike_icon_container" onclick="toggle_dislike_button(); vote(false);" style="margin: 10px; color: #ea2c5a;">
+                            <span class="fa fa-thumbs-o-down" id="dislike_icon" style="font-size: 19px; color: white;"></span><br>
+                            <span id="dislike_value"></span>
+                        </div>
+                        <div class="text-center" style="margin: 10px; color: #ea2c5a;">
+                            <span class="fa fa-video-camera" style="font-size: 19px; color: white;"></span><br>
+                            Reload
+                        </div>
+                        <div class="text-center" style="margin: 10px; color: #ea2c5a;">
+                            <span class="fa fa-flag" style="font-size: 19px; color: white;"></span><br>
+                            Report
+                        </div>
+                        <div class="text-center" style="margin: 10px; color: #ea2c5a;">
+                            <span class="fa fa-inr" style="font-size: 19px; color: white;"></span><br>
+                            Donate
+                        </div>
+                    </div>
+                    <div class="col-xs-1 col-sm-1">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <p style="color: #a9a9a9; text-align: center; padding-top: 22px; font-size: 18px;font-weight: 500;"><span id="subject">
+                    <%= subject %></span></p>
+            <div style="float: none; text-align: center; display: flex; justify-content: center">
+                <div style="float: left; width: 86px; padding: 5px 10px 5px 5px; border: solid 1px #ea2c5a; border-top-left-radius: 3px; border-bottom-left-radius: 3px; background-color: #ea2c5a; color: #ffffff;">
+                    <span>Branch</span>
+                </div>
+                <div style="float: left; width: 92px; padding: 5px 10px 5px 5px; border: solid 1px #424242; border-left: none; border-top-right-radius: 3px; border-bottom-right-radius: 3px; color: #7e7e7e;">
+                    <span id="branch_name">
+                        <%= branch %></span>
+                </div>
+            </div>
+        </div>
+        <div style="width: 100%; float: none; padding: 30px; text-align: center;">
+            <div style="text-align: center; font-size: 20px; color: #a9a9a9;">
+                <span id="viewcount">
+                    <%=views%></span> Views
+            </div>
+            <div style=" margin-top: 10px; margin-bottom: 10px; height: 3px; width: 100%; background-color: #eceff0;">
+                <div id="progress_bar" style="height: 3px; background-color: #28b47e;">
+                </div>
+            </div>
+            <div>
+                <span style="color: #ea2c5a; font-size: 15px;" id="vote_percentage"></span>
+            </div>
+        </div>
+        <div id="comment_container">
+            <div style="text-align: left; padding-left: 30px; color: #8e9ea6; font-size: 20px; padding-bottom: 15px;">
+                Recent Comments
+            </div>
+            <form id="comment_container_internal" onsubmit="return false">
+                <div class="p-3" style="padding-left: 30px; padding-right: 30px; padding-bottom: 20px;">
+                    <div class="d-flex flex-row align-items-start">
+                        <textarea class="form-control ml-1 shadow-none textarea" placeholder="Whats on your mind..." maxlength="280" style="resize: none; background-color: #242424; color: white;" id="comment_msg"></textarea>
+                    </div>
+                    <div class="mt-2 text-right" style="padding-top: 10px; padding-bottom: 10px;">
+                        <button class="btn btn-primary btn-sm shadow-none" style="padding-right: 10px; outline: none;" type="submit">Post comment</button> <button class="btn btn-outline-primary btn-sm ml-1 shadow-none" style="outline: none;" type="button" onclick="$('#comment_msg').val('');">Cancel</button>
+                    </div>
+                </div>
+            </form>
+            <div id="comment_list" style="padding-left: 30px; padding-right: 30px; padding-bottom: 50px;">
+            </div>
+        </div>
+    </div>
+    <div id="menu_container" style="width: 100%; height: 100%; z-index: 5000; position: absolute; display: none; top: 0px">
+        <div class="main" id="menu_list">
+            <div class="menu" style="margin-top: 0px; margin-bottom: 0px;">
+                <div class="menu__item" id="0-0" onclick="menu_redirect('home')">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGZp%0D%0AbGw9IiNmZmZmZmYiIGlkPSJzdmdfMSIgZD0ibTIwLDQwbDAsLTEybDgsMGwwLDEybDEwLDBsMCwt%0D%0AMTZsNiwwbC0yMCwtMThsLTIwLDE4bDYsMGwwLDE2bDEwLDB6Ii8+CiA8L2c+Cjwvc3ZnPg==">
+                    <div class="menu__content">
+                        <span class="menu__span">HOME</span><span class="menu__span">HOME</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="1-0" onclick="menu_redirect('stats')">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGlk%0D%0APSJzdmdfMSIgZmlsbD0ibm9uZSIgZD0ibTAsMGw0OCwwbDAsNDhsLTQ4LDBsMCwtNDh6Ii8+CiAg%0D%0APHBhdGggZmlsbD0iI2ZmZmZmZiIgaWQ9InN2Z18yIiBkPSJtMjAsNDBsOCwwbDAsLTMybC04LDBs%0D%0AMCwzMnptLTEyLDBsOCwwbDAsLTE2bC04LDBsMCwxNnptMjQsLTIybDAsMjJsOCwwbDAsLTIybC04%0D%0ALDB6Ii8+CiA8L2c+Cjwvc3ZnPg==">
+                    <div class="menu__content">
+                        <span class="menu__span">STATS</span><span class="menu__span">STATS</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="0-1" onclick="menu_redirect('lecture')">
+                    <img class="menu__icon" src="lecture.png">
+                    <div class="menu__content">
+                        <span class="menu__span">LECTURES</span><span class="menu__span">LECTURES</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="1-1" onclick="menu_redirect('likes')">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGlk%0D%0APSJzdmdfMSIgZmlsbD0ibm9uZSIgZD0ibTAsMGw0OCwwbDAsNDhsLTQ4LDBsMCwtNDh6Ii8+CiAg%0D%0APHBhdGggZmlsbD0iI2ZmZmZmZiIgaWQ9InN2Z18yIiBkPSJtMjQsNDIuN2wtMi45LC0yLjYzYy0x%0D%0AMC4zLC05LjM1IC0xNy4xLC0xNS41MiAtMTcuMSwtMjMuMDdjMCwtNi4xNyA0LjgzLC0xMSAxMSwt%0D%0AMTFjMy40OCwwIDYuODIsMS42MiA5LDQuMTdjMi4xOCwtMi41NSA1LjUyLC00LjE3IDksLTQuMTdj%0D%0ANi4xNywwIDExLDQuODMgMTEsMTFjMCw3LjU1IC02LjgsMTMuNzIgLTE3LjEsMjMuMDdsLTIuOSwy%0D%0ALjYzeiIvPgogPC9nPgo8L3N2Zz4=">
+                    <div class="menu__content">
+                        <span class="menu__span">LIKES</span><span class="menu__span">LIKES</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="0-2" onclick="menu_redirect('qna')">
+                    <img class="menu__icon" src="qna.png">
+                    <div class="menu__content">
+                        <span class="menu__span">QnA</span><span class="menu__span">QnA</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="1-2" onclick="menu_redirect('chats')">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGZp%0D%0AbGw9IiNmZmZmZmYiIGlkPSJzdmdfMSIgZD0ibTQuMDIsNDJsNDEuOTgsLTE4bC00MS45OCwtMThs%0D%0ALTAuMDIsMTRsMzAsNGwtMzAsNGwwLjAyLDE0eiIvPgogPC9nPgo8L3N2Zz4=">
+                    <div class="menu__content">
+                        <span class="menu__span">CHATS</span><span class="menu__span">CHATS</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="2-2" onclick="menu_redirect('materials')">
+                    <img class="menu__icon" src="study_materials.png">
+                    <div class="menu__content">
+                        <span class="menu__span">MATERIALS</span><span class="menu__span">MATERIALS</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="0-3">
+                    <img class="menu__icon" onclick="menu_back()" src="close.png" style="padding: 3px;">
+                    <div class="menu__content">
+                        <span class="menu__span">CLOSE</span><span class="menu__span">CLOSE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    function menu_button() {
+        $("#web_header").fadeToggle(300);
+        $("#base_page_container").fadeToggle(300);
+        $("#menu_container").delay(400).fadeToggle(300);
+    }
+
+    function menu_back() {
+        $("#web_header").delay(400).fadeToggle(300);
+        $("#base_page_container").delay(400).fadeToggle(300);
+        $("#menu_container").fadeToggle(300);
+    }
+    </script>
+    <script type="text/javascript">
+    $("#comment_container").submit(function(e) {
+        e.preventDefault();
+        var comment_msg = $("#comment_msg").val();
+        var comment_post = { comment_msg: comment_msg }
+        $.post('/player_comment', comment_post, function(data, e) {
+            var comment_msg = $("#comment_msg").val('');
+            var data_temp = JSON.parse(data);
+            console.log(data_temp);
+            var msg_string = "<div style='text-align: left; margin-top: 10px;'><div style='color: #8e9ea6; padding-bottom: 5px;'><div class='row'><div class='col md-6'><a href='#' style='color: #ea2c5a; display:inline; font-size: 15px; text-decoration: none;'>" + string_cap([data_temp.commentor]) + "</a></div><div class='col md-6' style='display: inline-block; text-align: right; width: 100%; font-size: 15px;'>(Rank :" + data_temp.rank + ")</div></div></div><div style='color: white; width: 100%;'>" + data_temp.commentor_msg + "</div></div>";
+
+            $("#comment_list").prepend(msg_string);
+
+        })
+    })
+
+    $.post('/player_comment_preload', function(data, e) {
+        var data_temp = JSON.parse(data);
+        for (var i = 0; i < data_temp.length; i++) {
+            var msg_string = "<div style='text-align: left; margin-top: 10px;'><div style='color: #8e9ea6; padding-bottom: 5px;'><div class='row'><div class='col md-6'><a href='#' style='color: #ea2c5a; display:inline; font-size: 15px; text-decoration: none;'>" + string_cap([data_temp[i].commentor]) + "</a></div><div class='col md-6' style='display: inline-block; text-align: right; width: 100%; font-size: 15px;'>(Rank :" + data_temp[i].rank + ")</div></div></div><div style='color: white; width: 100%;'>" + data_temp[i].commentor_msg + "</div></div>";
+            $("#comment_list").prepend(msg_string);
+        }
+    })
+    </script>
+    <script type="text/javascript">
+    $("#viewcount").text('<%= views %>' + ' views');
+    $("#branch_name").text('<%= branch %>'.toUpperCase());
+
+    var subject = '<%= subject %>';
+    const words1 = subject.split("_");
+    $("#subject").text(string_cap(words1));
+    var lec_name = '<%= lec_name %>';
+    const words2 = lec_name.split(" ");
+    $("#lec_name_container").text("Lecture - " + '<%= lec_num%> ' + words2);
+
+    function string_cap(words) {
+        for (let i = 0; i < words.length; i++) {
+            words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+            if (i == (words.length - 1)) {
+                return words.join(" ");
+            }
+        }
+    }
+    </script>
+    <script type="text/javascript">
+    var vid = document.getElementById("videoplayer");
+    window.addEventListener('load', (event) => {
+
+        var userip = "<%= ip_address %>";
+        $.getJSON('https://api.allorigins.win/get?url=' + encodeURIComponent('https://proxycheck.io/v2/' + userip + '?vpn=1&asn=1'), function(data) {
+            var ip = userip;
+            var ip_info = JSON.parse(data.contents)[ip];
+            var city = ip_info.city;
+            var countrycode = ip_info.isocode;
+            var proxy = ip_info.proxy;
+            watermark_content = ["<%= username %>", "<%= phonenumber %>", city, ip]
+            if (proxy == "no" && (ip_info.isocode == "IN" || ip_info.isocode == "TR")) {
+                $.post('/grimlim', function(data, e) {
+                    watermarkalgo();
+                    var data_temp = JSON.parse(data);
+                    $("#viewcount").text(parseInt(<%= views %>) + 1);
+                    if (document.getElementById("videoplayer_html5_api")) {
+                        document.querySelector("#videoplayer_html5_api").src = data_temp.fv; //.replace(/amp;/g, "");
+                        document.querySelector("#videoplayer_html5_api").load();
+                        document.querySelector('#videoplayer_html5_api').addEventListener('loadeddata', function() {
+                            document.querySelector("#videoplayer_html5_api").removeAttribute("src");
+                            document.querySelector("#videoplayer_html5_api").play();
+                            document.querySelector("#videoplayer_html5_api").currentTime = 1;
+                        }, false);
+                    }
+                })
+            } else {
+                var base_url = window.location.origin;
+                window.location.replace(base_url + "/error");
+            }
+        });
+
+        $("<div class='watermark_canvas' aria-live='off' aria-atomic='true'><div id='water-id' style='letter-spacing: 8px; font-size: 20px; position: absolute; top: 34%; left:76%; background-color: black; display: none;'>357446</div></div>").insertAfter("#videoplayer_html5_api");
+        $('.vjs-picture-in-picture-control').hide();
+
+    })
+
+
+
+
+
+    function watermarkalgo() {
+        var water_array_top = [281, 649, 951, 920, 1073, 46, 1054, 194, 1105, 457, 667, 70, 488, 346, 626, 1113, 478, 24, 229, 156, 766, 621, 982, 510, 342, 395, 564, 120, 618, 242, 1129, 585, 1015, 74, 92, 123, 862, 1176, 1030, 1019, 205, 272, 150, 630, 736, 110, 779, 676, 796, 497, 435, 1076, 890, 786, 223, 45, 1044, 7, 949, 663, 616, 928, 747, 302, 610, 153, 296, 640, 137, 622, 394, 891, 551, 1066, 1033, 657, 918, 647, 44, 154, 422, 713, 222, 483, 881, 688, 1159, 270, 1012, 1, 303, 18, 1147, 332, 996, 966, 173, 363, 21, 629, 558, 1200, 334, 284, 411, 807, 1068, 145, 285, 437, 776, 1002, 418, 1145, 1133, 677, 1092, 94, 511, 350, 1174, 130, 733, 1003, 1028, 543, 707, 674, 535, 919, 382, 530, 184, 1194, 73, 9, 460, 632, 973, 534, 393, 1107, 451, 61, 66, 380, 146, 1166, 1184, 812, 541, 387, 499, 440, 725, 1114, 385, 513, 1004, 761, 868, 192, 658, 1130, 423, 721, 111, 304, 1037, 874, 1039, 718, 101, 643, 426, 1132, 164, 1191, 98, 702, 781, 1134, 504, 758, 690, 995, 1059, 1098, 230, 650, 764, 344, 1138, 2, 1135, 368, 190, 337, 549, 710, 645, 202, 532, 635, 195, 498, 548, 193, 1047, 699, 502, 860, 880, 55, 14, 705, 581, 619, 85, 319, 773, 507, 819, 833, 875, 1087, 129, 671, 246, 442, 233, 1112, 886, 213, 774, 54, 929, 482, 1188, 1151, 1091, 124, 464, 783, 358, 715, 75, 1021, 163, 370, 546, 331, 985, 539, 922, 1097, 584, 637, 536, 914, 1052, 34, 968, 415, 898, 814, 216, 1117, 306, 613, 851, 731, 1069, 114, 1167, 116, 1055, 1022, 831, 1089, 383, 1144, 294, 801, 1111, 310, 760, 599, 424, 276, 191, 329, 1177, 753, 225, 357, 757, 240, 349, 89, 577, 356, 840, 893, 934, 226, 458, 107, 693, 926, 1140, 157, 815, 1165, 717, 756, 605, 32, 256, 113, 181, 455, 1155, 38, 738, 484, 565, 1085, 1183, 138, 1088, 798, 1106, 26, 12, 1172, 104, 409, 795, 330, 769, 525, 1193, 1175, 938, 287, 347, 1171, 722, 1095, 1189, 397, 1081, 183, 19, 454, 253, 1014, 313, 288, 1100, 813, 720, 217, 566, 1148, 1103, 134, 316, 861, 198, 834, 174, 846, 1173, 742, 554, 189, 924, 177, 672, 446, 606, 828, 268, 945, 932, 1080, 601, 1016, 148, 269, 659, 143, 431, 90, 946, 633, 1051, 489, 921, 13, 576, 63, 132, 354, 309, 232, 759, 343, 1170, 106, 917, 468, 399, 1053, 62, 818, 351, 1056, 1006, 185, 136, 837, 248, 778, 691, 668, 662, 1169, 959, 998, 739, 257, 1084, 724, 69, 884, 396, 563, 752, 307, 96, 410, 438, 971, 824, 1009, 835, 512, 570, 400, 638, 77, 777, 208, 372, 266, 508, 60, 900, 102, 711, 477, 159, 765, 991, 775, 15, 152, 1120, 743, 980, 49, 278, 472, 1040, 30, 333, 279, 682, 641, 1187, 182, 1094, 1024, 301, 589, 127, 1182, 277, 600, 1128, 572, 17, 903, 10, 804, 989, 741, 197, 1116, 404, 916, 615, 496, 562, 588, 68, 420, 703, 491, 448, 1057, 509, 1102, 300, 1045, 178, 785, 430, 5, 902, 1178, 231, 135, 854, 544, 93, 1018, 809, 171, 1123, 87, 529, 289, 957, 839, 151, 885, 1160, 314, 847, 406, 235, 160, 1163, 609, 141, 1192, 67, 651, 526, 215, 1034, 856, 981, 567, 425, 768, 339, 389, 186, 1025, 876, 79, 602, 439, 224, 848, 221, 444, 604, 631, 506, 122, 265, 1058, 680, 311, 800, 842, 243, 373, 374, 321, 6, 76, 527, 571, 80, 666, 598, 950, 1090, 1143, 16, 555, 241, 147, 142, 340, 327, 964, 51, 899, 469, 379, 708, 593, 119, 378, 519, 628, 29, 308, 239, 22, 936, 608, 1139, 750, 578, 1104, 264, 1046, 1065, 669, 845, 365, 417, 1099, 726, 909, 892, 859, 103, 656, 211, 538, 770, 360, 384, 906, 1195, 121, 338, 947, 371, 367, 904, 592, 822, 234, 254, 166, 940, 695, 942, 583, 131, 799, 428, 280, 518, 521, 694, 95, 965, 42, 878, 683, 1043, 168, 698, 1026, 445, 573, 433, 686, 203, 709, 580, 471, 126, 810, 176, 392, 462, 730, 639, 237, 1036, 597, 744, 550, 335, 39, 1124, 267, 1079, 790, 500, 829, 755, 1042, 923, 481, 352, 939, 784, 20, 823, 391, 908, 214, 678, 1041, 263, 1190, 858, 952, 568, 441, 1061, 283, 1050, 528, 486, 115, 547, 556, 514, 315, 1186, 443, 286, 531, 325, 403, 956, 81, 664, 465, 1164, 1152, 595, 793, 362, 882, 714, 292, 140, 961, 3, 273, 1008, 361, 545, 36, 1154, 390, 642, 1137, 78, 117, 838, 987, 1153, 249, 377, 405, 149, 128, 575, 466, 1180, 388, 348, 933, 413, 976, 1038, 596, 1127, 467, 35, 652, 318, 220, 634, 855, 687, 979, 453, 935, 670, 501, 155, 727, 317, 984, 210, 559, 4, 209, 944, 732, 47, 419, 1109, 696, 1136, 1119, 158, 653, 1142, 897, 552, 1096, 569, 196, 161, 990, 402, 172, 323, 328, 889, 1048, 537, 994, 381, 505, 199, 560, 64, 1027, 262, 1017, 364, 238, 746, 895, 852, 1077, 1168, 925, 579, 162, 820, 170, 523, 792, 866, 11, 1049, 802, 948, 1010, 436, 407, 612, 245, 43, 941, 91, 803, 557, 735, 28, 912, 1179, 298, 97, 872, 871, 745, 797, 52, 139, 179, 911, 1118, 700, 1067, 1000, 376, 305, 258, 704, 734, 1196, 1101, 247, 806, 993, 503, 692, 414, 930, 188, 1198, 244, 617, 227, 697, 474, 261, 1197, 1162, 836, 1072, 701, 480, 794, 894, 324, 1035, 791, 841, 86, 879, 611, 1086, 487, 913, 684, 975, 594, 762, 787, 969, 48, 144, 112, 299, 870, 827, 958, 953, 33, 712, 99, 1131, 1082, 515, 452, 627, 450, 689, 236, 336, 850, 250, 864, 661, 997, 447, 974, 207, 201, 369, 857, 972, 459, 896, 587, 118, 167, 353, 843, 366, 1146, 679, 1110, 673, 681, 375, 1023, 1093, 1185, 988, 204, 553, 516, 771, 767, 830, 962, 1156, 789, 888, 495, 999, 883, 293, 586, 863, 461, 603, 574, 623, 716, 614, 282, 620, 723, 255, 53, 493, 963, 561, 1005, 1150, 1062, 887, 660, 429, 905, 1121, 56, 398, 808, 1031, 274, 805, 907, 1122, 427, 821, 915, 58, 869, 811, 359, 865, 675, 412, 322, 297, 983, 1071, 992, 401, 1064, 782, 180, 470, 41, 125, 591, 100, 386, 1115, 729, 320, 290, 1074, 728, 955, 624, 960, 749, 1181, 540, 271, 1199, 1078, 780, 644, 37, 228, 986, 901, 877, 788, 1125, 275, 105, 646, 479, 187, 473, 751, 1029, 291, 542, 867, 590, 65, 910, 492, 772, 873, 853, 520, 212, 25, 494, 754, 533, 1126, 740, 83, 954, 625, 654, 648, 826, 1149, 72, 82, 832, 967, 432, 816, 1108, 252, 259, 408, 175, 463, 943, 416, 978, 133, 1141, 169, 1063, 1011, 1157, 206, 748, 737, 1020, 295, 524, 582, 1001, 817, 50, 931, 108, 218, 23, 31, 825, 345, 326, 719, 937, 449, 490, 1075, 927, 57, 27, 844, 977, 8, 636, 421, 1060, 1161, 251, 165, 475, 1083, 849, 607, 1158, 1070, 485, 219, 1032, 685, 476, 434, 456, 71, 355, 312, 706, 59, 200, 88, 970, 1007, 109, 665, 260, 1013, 763, 517, 341, 655, 40, 84, 522];
+        var water_array_left = [90, 127, 483, 1153, 533, 957, 1185, 870, 856, 594, 115, 886, 1088, 91, 129, 18, 1009, 86, 237, 1107, 423, 946, 773, 871, 155, 1028, 329, 387, 559, 480, 927, 280, 313, 103, 998, 1184, 889, 560, 832, 647, 85, 744, 1052, 197, 892, 776, 848, 167, 964, 512, 325, 555, 216, 1061, 498, 193, 1049, 1140, 425, 424, 759, 1108, 569, 403, 230, 6, 307, 826, 721, 249, 369, 685, 1129, 12, 589, 835, 294, 306, 265, 996, 952, 149, 261, 442, 723, 644, 636, 945, 805, 774, 55, 700, 618, 308, 221, 578, 770, 637, 356, 518, 579, 724, 304, 493, 632, 142, 158, 705, 108, 101, 1189, 319, 10, 491, 1167, 734, 2, 718, 740, 1177, 433, 912, 64, 548, 531, 1069, 1085, 847, 788, 84, 535, 434, 1092, 492, 1019, 684, 69, 813, 273, 1136, 615, 23, 137, 643, 40, 989, 523, 552, 1132, 1090, 577, 1130, 252, 654, 807, 612, 582, 1024, 466, 200, 809, 176, 708, 236, 144, 28, 1120, 13, 1022, 1040, 11, 381, 198, 617, 556, 65, 92, 1010, 930, 410, 672, 1165, 405, 1171, 663, 1179, 199, 1072, 570, 205, 416, 1198, 649, 1015, 487, 244, 464, 124, 1043, 1100, 829, 943, 288, 317, 1137, 1112, 983, 1026, 586, 443, 16, 728, 438, 710, 298, 834, 338, 843, 345, 590, 771, 681, 1051, 924, 639, 400, 818, 955, 378, 147, 741, 1023, 397, 898, 572, 963, 608, 309, 966, 532, 948, 1113, 394, 911, 1004, 435, 686, 622, 973, 213, 141, 225, 1152, 865, 796, 1097, 921, 1047, 220, 1180, 854, 51, 367, 667, 77, 1134, 112, 780, 454, 703, 450, 131, 542, 1154, 207, 962, 1055, 361, 508, 587, 534, 558, 1187, 408, 1106, 1012, 275, 58, 321, 666, 1169, 692, 266, 320, 448, 817, 24, 831, 351, 1063, 1144, 330, 70, 250, 953, 168, 950, 126, 99, 98, 811, 915, 116, 581, 245, 876, 1195, 1157, 1141, 977, 1182, 650, 956, 762, 196, 339, 746, 243, 1013, 689, 573, 1181, 536, 614, 743, 675, 627, 1003, 20, 1190, 9, 516, 868, 706, 551, 335, 382, 1147, 377, 849, 218, 96, 949, 256, 445, 779, 177, 419, 526, 254, 1110, 621, 1089, 905, 941, 777, 678, 150, 947, 1086, 1050, 376, 1076, 673, 303, 395, 1048, 72, 76, 1033, 276, 1080, 165, 161, 839, 1091, 896, 634, 73, 67, 502, 380, 122, 830, 633, 279, 879, 210, 447, 597, 107, 75, 574, 163, 732, 453, 449, 978, 253, 942, 274, 47, 520, 877, 475, 472, 241, 894, 677, 704, 994, 289, 544, 164, 714, 507, 284, 511, 215, 247, 54, 71, 753, 219, 451, 640, 656, 499, 630, 939, 412, 803, 571, 189, 628, 130, 549, 184, 1081, 857, 568, 485, 477, 595, 311, 937, 327, 370, 1114, 888, 1155, 17, 283, 745, 22, 183, 1018, 486, 360, 152, 904, 1002, 959, 33, 510, 223, 619, 270, 180, 709, 1070, 497, 1039, 923, 671, 286, 609, 965, 323, 1174, 60, 390, 801, 248, 111, 1037, 750, 388, 459, 138, 1014, 172, 59, 690, 1056, 1194, 501, 80, 48, 657, 117, 185, 808, 1045, 437, 828, 290, 1025, 1176, 238, 514, 660, 482, 157, 50, 173, 1126, 404, 100, 181, 353, 913, 1077, 341, 954, 1139, 1029, 1156, 228, 550, 600, 398, 26, 188, 900, 764, 819, 429, 679, 314, 406, 182, 940, 593, 296, 202, 944, 1057, 822, 1007, 701, 417, 613, 209, 781, 251, 346, 1119, 285, 1062, 874, 513, 845, 731, 460, 727, 906, 4, 1078, 1074, 463, 421, 342, 517, 893, 791, 430, 757, 333, 139, 527, 717, 524, 729, 971, 29, 407, 778, 1159, 295, 82, 668, 1058, 1006, 34, 758, 386, 960, 599, 765, 89, 106, 693, 393, 652, 606, 392, 446, 374, 695, 928, 919, 836, 981, 858, 562, 674, 35, 958, 140, 920, 1083, 997, 233, 1135, 166, 682, 804, 859, 687, 366, 1035, 1031, 322, 125, 1066, 133, 385, 785, 162, 694, 566, 669, 806, 975, 318, 1087, 986, 772, 1020, 489, 866, 490, 440, 841, 365, 725, 457, 970, 815, 469, 488, 455, 747, 94, 368, 192, 316, 802, 861, 1124, 156, 476, 1008, 760, 716, 169, 208, 14, 426, 104, 1197, 87, 372, 1096, 354, 134, 504, 816, 699, 1173, 179, 797, 214, 39, 348, 821, 591, 1011, 359, 258, 991, 8, 174, 1109, 383, 1115, 688, 242, 153, 540, 1196, 545, 500, 384, 170, 1060, 766, 1041, 21, 293, 867, 767, 987, 312, 525, 884, 1075, 324, 1016, 763, 800, 1127, 995, 269, 420, 938, 37, 623, 790, 344, 154, 260, 842, 1122, 292, 610, 305, 626, 528, 291, 458, 1163, 45, 52, 431, 541, 720, 1044, 1142, 428, 602, 616, 1160, 1138, 211, 755, 1103, 190, 456, 782, 611, 1192, 88, 257, 132, 1095, 282, 1158, 1150, 287, 1099, 46, 1067, 399, 349, 1148, 336, 1082, 267, 715, 748, 584, 515, 255, 825, 36, 670, 969, 187, 735, 1073, 470, 624, 42, 646, 658, 461, 391, 909, 792, 707, 334, 1084, 95, 436, 897, 1054, 1186, 1116, 625, 976, 567, 1125, 890, 396, 985, 883, 1065, 136, 910, 754, 272, 653, 135, 730, 299, 1121, 340, 97, 332, 1178, 484, 56, 123, 932, 496, 232, 853, 895, 1027, 1038, 160, 993, 93, 15, 246, 494, 201, 1172, 929, 121, 1105, 271, 310, 195, 110, 27, 224, 864, 604, 401, 1183, 855, 992, 880, 713, 479, 793, 1059, 974, 389, 63, 683, 415, 576, 563, 227, 203, 999, 328, 869, 495, 5, 1102, 638, 1175, 837, 427, 596, 648, 980, 148, 1046, 1166, 478, 281, 925, 814, 302, 546, 914, 1188, 1191, 529, 347, 1068, 41, 882, 665, 1131, 178, 1042, 635, 1104, 467, 824, 769, 768, 1098, 936, 38, 326, 371, 899, 231, 206, 409, 655, 916, 505, 1071, 68, 873, 812, 439, 362, 631, 603, 373, 583, 259, 664, 120, 118, 145, 1017, 918, 471, 301, 902, 908, 787, 752, 53, 680, 620, 432, 7, 3, 119, 1034, 651, 226, 1117, 212, 363, 851, 239, 66, 553, 659, 712, 844, 539, 522, 300, 194, 1101, 114, 1133, 820, 1021, 592, 217, 1168, 146, 74, 872, 128, 25, 1001, 794, 789, 645, 83, 982, 175, 521, 863, 234, 642, 379, 696, 557, 240, 588, 337, 833, 481, 598, 413, 268, 418, 113, 738, 565, 357, 81, 607, 564, 1036, 795, 171, 561, 1118, 1161, 263, 860, 691, 798, 503, 979, 186, 907, 441, 547, 749, 1162, 554, 1164, 988, 19, 1094, 31, 891, 1000, 102, 1145, 509, 641, 719, 32, 468, 984, 931, 742, 903, 159, 79, 278, 575, 364, 786, 852, 1, 262, 297, 222, 840, 78, 204, 1200, 878, 972, 375, 711, 697, 1128, 850, 61, 229, 698, 411, 951, 49, 109, 452, 799, 1093, 1111, 444, 355, 827, 1199, 661, 315, 862, 1143, 1170, 358, 506, 1149, 1151, 1005, 990, 601, 961, 737, 838, 57, 722, 726, 352, 474, 235, 331, 519, 1079, 543, 823, 191, 933, 414, 465, 1193, 585, 885, 901, 736, 605, 1123, 739, 402, 143, 462, 580, 761, 676, 44, 1032, 881, 537, 783, 917, 968, 30, 935, 756, 887, 473, 350, 151, 733, 538, 702, 967, 1030, 62, 1053, 43, 662, 810, 343, 875, 846, 264, 530, 1064, 784, 105, 422, 629, 277, 775, 922, 1146, 934, 926, 751];
+        setInterval(function() {
+            random_number = Math.floor(Math.random() * 3.99);
+            $("#water-id").text(watermark_content[random_number]);
+        }, 30000);
+        setInterval(function() {
+            if (((document.querySelector("#videoplayer_html5_api").currentTime % 30) <= 10) && (document.querySelector("#videoplayer_html5_api").currentTime > 25)) {
+                $("#water-id").show();
+                var videoduration = document.getElementById("videoplayer_html5_api").duration;
+                var video_watermark_start_number = Math.floor(videoduration) % 1200;
+                var currenttime = document.getElementById("videoplayer_html5_api").currentTime;
+                var random_num = parseInt(currenttime / 30);
+                var num_location = video_watermark_start_number + random_num;
+                if (num_location < 1200) {
+                    var random_number = Math.floor(water_array_top[num_location] / 1200 * 3.99);
+                    $("#water-id").text(watermark_content[random_number]);
+                    document.getElementById("water-id").style.top = 10 + water_array_top[num_location] * 80 / 1200 + "%";
+                    document.getElementById("water-id").style.left = 10 + water_array_left[num_location] * 80 / 1200 + "%";
+                } else {
+                    var random_number = Math.floor(water_array_top[num_location - 1200] / 1200 * 3.99);
+                    $("#water-id").text(watermark_content[random_number]);
+                    document.getElementById("water-id").style.top = 10 + water_array_top[num_location - 1200] * 80 / 1200 + "%";
+                    document.getElementById("water-id").style.left = 10 + water_array_left[num_location - 1200] * 80 / 1200 + "%";
+                }
+            } else {
+                $("#water-id").hide();
+            }
+        }, 100);
+    }
+
+
+    var player = videojs('videoplayer');
+
+    player.landscapeFullscreen();
+    </script>
+    <script>
+    function toggle_like_button() {
+        vote_flag = true;
+        if ($("#dislike_icon").hasClass("fa-thumbs-down")) {
+            toggle_dislike_button();
+            if ($("#like_icon").hasClass("fa-thumbs-up")) {
+                $("#like_icon").addClass("fa-thumbs-o-up");
+                $("#like_icon").removeClass("fa-thumbs-up");
+                $("#like_icon").css('color', 'white');
+                $("#like_value").text(Number($("#like_value").text()) - 1);
+                var like_value = parseInt($("#like_value").text());
+                var dislike_value = parseInt($("#dislike_value").text());
+                var vote_percentage = (dislike_value + like_value) == 0 ? 0 : Math.trunc(like_value / (dislike_value + like_value) * 100);
+                $("#progress_bar").css("width", vote_percentage + '%');
+                $("#vote_percentage").text(vote_percentage + '%');
+            } else if ($("#like_icon").hasClass("fa-thumbs-o-up")) {
+                $("#like_icon").removeClass("fa-thumbs-o-up");
+                $("#like_icon").addClass("fa-thumbs-up");
+                $("#like_icon").css('color', '#2c88ea');
+                $("#like_value").text(Number($("#like_value").text()) + 1);
+                var like_value = parseInt($("#like_value").text());
+                var dislike_value = parseInt($("#dislike_value").text());
+                var vote_percentage = (dislike_value + like_value) == 0 ? 0 : Math.trunc(like_value / (dislike_value + like_value) * 100);
+                $("#progress_bar").css("width", vote_percentage + '%');
+                $("#vote_percentage").text(vote_percentage + '%');
+            }
+        } else {
+            if ($("#like_icon").hasClass("fa-thumbs-up")) {
+                $("#like_icon").addClass("fa-thumbs-o-up");
+                $("#like_icon").removeClass("fa-thumbs-up");
+                $("#like_icon").css('color', 'white');
+                $("#like_value").text(Number($("#like_value").text()) - 1);
+                var like_value = parseInt($("#like_value").text());
+                var dislike_value = parseInt($("#dislike_value").text());
+                var vote_percentage = (dislike_value + like_value) == 0 ? 0 : Math.trunc(like_value / (dislike_value + like_value) * 100);
+                $("#progress_bar").css("width", vote_percentage + '%');
+                $("#vote_percentage").text(vote_percentage + '%');
+            } else if ($("#like_icon").hasClass("fa-thumbs-o-up")) {
+                $("#like_icon").removeClass("fa-thumbs-o-up");
+                $("#like_icon").addClass("fa-thumbs-up");
+                $("#like_icon").css('color', '#2c88ea');
+                $("#like_value").text(Number($("#like_value").text()) + 1);
+                var like_value = parseInt($("#like_value").text());
+                var dislike_value = parseInt($("#dislike_value").text());
+                var vote_percentage = (dislike_value + like_value) == 0 ? 0 : Math.trunc(like_value / (dislike_value + like_value) * 100);
+                $("#progress_bar").css("width", vote_percentage + '%');
+                $("#vote_percentage").text(vote_percentage + '%');
+            }
+        }
+    }
+
+
+    function toggle_dislike_button() {
+        vote_flag = true;
+        if ($("#like_icon").hasClass("fa-thumbs-up")) {
+            toggle_like_button();
+            if ($("#dislike_icon").hasClass("fa-thumbs-down")) {
+                $("#dislike_icon").addClass("fa-thumbs-o-down");
+                $("#dislike_icon").removeClass("fa-thumbs-down");
+                $("#dislike_icon").css('color', 'white');
+                $("#dislike_value").text(Number($("#dislike_value").text()) - 1);
+                var like_value = parseInt($("#like_value").text());
+                var dislike_value = parseInt($("#dislike_value").text());
+                var vote_percentage = (dislike_value + like_value) == 0 ? 0 : Math.trunc(like_value / (dislike_value + like_value) * 100);
+                $("#progress_bar").css("width", vote_percentage + '%');
+                $("#vote_percentage").text(vote_percentage + '%');
+            } else if ($("#dislike_icon").hasClass("fa-thumbs-o-down")) {
+                $("#dislike_icon").removeClass("fa-thumbs-o-down");
+                $("#dislike_icon").addClass("fa-thumbs-down");
+                $("#dislike_icon").css('color', '#2c88ea');
+                $("#dislike_value").text(Number($("#dislike_value").text()) + 1);
+                var like_value = parseInt($("#like_value").text());
+                var dislike_value = parseInt($("#dislike_value").text());
+                var vote_percentage = (dislike_value + like_value) == 0 ? 0 : Math.trunc(like_value / (dislike_value + like_value) * 100);
+                $("#progress_bar").css("width", vote_percentage + '%');
+                $("#vote_percentage").text(vote_percentage + '%');
+            }
+        } else {
+            if ($("#dislike_icon").hasClass("fa-thumbs-down")) {
+                $("#dislike_icon").addClass("fa-thumbs-o-down");
+                $("#dislike_icon").removeClass("fa-thumbs-down");
+                $("#dislike_icon").css('color', 'white');
+                $("#dislike_value").text(Number($("#dislike_value").text()) - 1);
+                var like_value = parseInt($("#like_value").text());
+                var dislike_value = parseInt($("#dislike_value").text());
+                var vote_percentage = (dislike_value + like_value) == 0 ? 0 : Math.trunc(like_value / (dislike_value + like_value) * 100);
+                $("#progress_bar").css("width", vote_percentage + '%');
+                $("#vote_percentage").text(vote_percentage + '%');
+            } else if ($("#dislike_icon").hasClass("fa-thumbs-o-down")) {
+                $("#dislike_icon").removeClass("fa-thumbs-o-down");
+                $("#dislike_icon").addClass("fa-thumbs-down");
+                $("#dislike_icon").css('color', '#2c88ea');
+                $("#dislike_value").text(Number($("#dislike_value").text()) + 1);
+                var like_value = parseInt($("#like_value").text());
+                var dislike_value = parseInt($("#dislike_value").text());
+                var vote_percentage = (dislike_value + like_value) == 0 ? 0 : Math.trunc(like_value / (dislike_value + like_value) * 100);
+                $("#progress_bar").css("width", vote_percentage + '%');
+                $("#vote_percentage").text(vote_percentage + '%');
+            }
+        }
+    }
+    </script>
+    <script>
+    function sweetalert_test() {
+
+        var challenge_num1 = Math.floor(Math.random() * 100);
+        var challenge_num2 = Math.floor(Math.random() * 100);
+        var challenge_num3 = Math.floor(Math.random() * 100);
+        var challenge_num4 = Math.floor(Math.random() * 100);
+        var math_rand_operator = ['+', '-', '*'];
+        var math_operand1 = math_rand_operator[Math.floor(Math.random() * 3)];
+        var math_operand2 = math_rand_operator[Math.floor(Math.random() * 3)];
+        var math_operand3 = math_rand_operator[Math.floor(Math.random() * 3)];
+        var math_question = challenge_num1 + math_operand1 + challenge_num2 + math_operand2 + challenge_num3 + math_operand3 + challenge_num4;
+
+        Swal.fire({
+            title: '<b>Challenge Question</b>',
+            icon: 'info',
+            html: ' <br> <b> ' + math_question + ' = ? </b>',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCloseButton: true,
+            showConfirmButton: false, 
+            focusConfirm: false,
+            cancelButtonText: '<i class="fa fa-thumbs-down"></i>',
+        }).then((result) => {
+            if (parseInt(result.value) === eval(math_question)) {
+                console.log('yes');
+            } else {
+                sweetalert_test();
+            }
+        })
+    }
+
+
+    myVar = setInterval(function() {
+        $(".vjs-fullscreen-control").trigger("click");
+        sweetalert_test()
+    }, 600000);
+    window.addEventListener('touchstart', function() {
+        clearTimeout(myVar)
+        myVar = setInterval(function() {
+            $(".vjs-fullscreen-control").trigger("click");
+            sweetalert_test()
+        }, 600000);
+    });
+
+    vote_flag = false;
+
+    if ('<%= like_status %>' == 'false') {
+        $("#like_value").text(<%= like %>);
+        $("#dislike_value").text(<%= dislike %>);
+        var dislike_value = parseInt(<%= dislike %>);
+        var like_value = parseInt(<%= like %>);
+        var vote_percentage = (dislike_value + like_value) == 0 ? 0 : Math.trunc(like_value / (dislike_value + like_value) * 100);
+        $("#progress_bar").css("width", vote_percentage + '%');
+        $("#vote_percentage").text(vote_percentage + '%');
+        $("#dislike_icon").removeClass("fa-thumbs-o-down");
+        $("#dislike_icon").addClass("fa-thumbs-down");
+        $("#dislike_icon").css('color', '#2c88ea');
+    } else if ('<%= like_status %>' == 'true') {
+        $("#like_value").text(<%= like %>);
+        $("#dislike_value").text(<%= dislike %>);
+        var dislike_value = parseInt(<%= dislike %>);
+        var like_value = parseInt(<%= like %>);
+        var vote_percentage = (dislike_value + like_value) == 0 ? 0 : Math.trunc(like_value / (dislike_value + like_value) * 100);
+        $("#progress_bar").css("width", vote_percentage + '%');
+        $("#vote_percentage").text(vote_percentage + '%');
+        $("#like_icon").removeClass("fa-thumbs-o-up");
+        $("#like_icon").addClass("fa-thumbs-up");
+        $("#like_icon").css('color', '#2c88ea');
+    } else {
+        $("#like_value").text(<%= like %>);
+        $("#dislike_value").text(<%= dislike %>);
+        var dislike_value = parseInt(<%= dislike %>);
+        var like_value = parseInt(<%= like %>);
+        var vote_percentage = (dislike_value + like_value) == 0 ? 0 : Math.trunc(like_value / (dislike_value + like_value) * 100);
+        $("#progress_bar").css("width", vote_percentage + '%');
+        $("#vote_percentage").text(vote_percentage + '%');
+    }
+
+
+
+
+    function vote(vote_status) {
+        if (vote_flag) {
+            var like_icon_status = $('#like_icon').css('color') == 'rgb(255, 255, 255)';
+            var dislike_icon_status = $('#dislike_icon').css('color') == 'rgb(255, 255, 255)';
+            var like_value = $("#like_value").text();
+            var dislike_value = $("#dislike_value").text();
+            if (like_icon_status == true && dislike_icon_status == true) {
+                vote_post('', like_value, dislike_value);
+            } else if (like_icon_status == false && dislike_icon_status == true) {
+                vote_post(true, like_value, dislike_value);
+            } else if (like_icon_status == true && dislike_icon_status == false) {
+                vote_post(false, like_value, dislike_value);
+            }
+        }
+    }
+
+    function vote_post(vote_status, like_value_status, dislike_value_status) {
+
+        $.post('/vote', { vote: vote_status, like_value: like_value_status, dislike_value: dislike_value_status }, function(data, e) {
+            console.log(data);
+        })
+
+    }
+
+    function menu_redirect(redirect_id) {
+        var base_url = window.location.origin;
+        window.location.replace(base_url + "/" + redirect_id);
+    }
+    </script>
+</body>
+
+</html>
