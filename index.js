@@ -71,7 +71,7 @@ var limiter = new rateLimit({
         // see Configuration section for more options and details
     }),
     message: template,
-    max: 1,
+    max: 100,
     // should match expireTimeMs
     windowMs: 15 * 60 * 1000
 });
