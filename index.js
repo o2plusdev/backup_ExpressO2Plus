@@ -275,7 +275,7 @@ app.get('/api/login_page', function(req, res) {
         var past_time = token.timestamp;
         var present_time = moment().format('x');
         var time_diff = present_time - past_time;
-        console.log(time_diff)
+        console.log(sess.user_ip )
         if (sess.user_ip == req.ip && time_diff <= time_limit && sess.browser_validity.includes(browser_version)) {
             res.render("login.ejs");
         } else {
