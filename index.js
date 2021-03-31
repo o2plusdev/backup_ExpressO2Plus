@@ -1,3 +1,4 @@
+require('dotenv').config();
 var express = require('express');
 const session = require('express-session');
 const expressip = require('express-ip');
@@ -22,16 +23,21 @@ const TelegramBot = require('node-telegram-bot-api');
 const rateLimit = require("express-rate-limit");
 var MongoStore = require('rate-limit-mongo');
 const Cryptr = require('cryptr');
-const cryptr = new Cryptr('IPx3zITsOPot5Vq60Y6L');
+const cryptr = new Cryptr(process.env.CRYPT_KEY);
 
 
+////////////////////////////////////////////////////////////////////////
 var server = 1;
 var browser_version = 'e'; //'Gecko/78.0';
 var time_limit = 500000000000000;
-// server 1 keys
-const error_token = '1782210941:AAFCkpPQj_Dtuke0iPo5McguasWefmCkgMU';
-const new_reg_token = '1718850510:AAHRqMUD9tguJhvf2iysBpg8pCh-rCG-RLc';
-var telegram_admin = '1150704639';
+////////////////////////////////////////////////////////////////////////
+
+
+
+const error_token = cryptr.decrypt(process.env.ERROR_TOKEN);
+const new_reg_token = cryptr.decrypt(process.env.NEWREG_TOKEN);
+var telegram_admin = cryptr.decrypt(process.env.TELEGRAM_ADMIN);
+
 
 const error_bot = new TelegramBot(error_token, { polling: true });
 const new_reg_bot = new TelegramBot(new_reg_token, { polling: true });
@@ -57,7 +63,7 @@ var template = '<script type="text/javascript"> window.location.href="https://ww
 
 var limiter = new rateLimit({
     store: new MongoStore({
-        uri: 'mongodb+srv://C6hivgPRCjxKGF9f:yW3c3fc8vpM0ego368z80271RCH@o2plusdatabase.vwl00.mongodb.net/userRateLimit',
+        uri: process.env.USERRATE_LIMIT,
         // should match windowMs
         collectionName: 'userRateLimit',
         expireTimeMs: 15 * 60 * 1000,
@@ -77,7 +83,7 @@ app.use(limiter);
 
 // cookie storage 
 var store = new MongoDBStore({
-    uri: 'mongodb+srv://C6hivgPRCjxKGF9f:yW3c3fc8vpM0ego368z80271RCH@o2plusdatabase.vwl00.mongodb.net/userSessions?retryWrites=true&w=majority',
+    uri: process.env.USER_SESSIONS,
     collection: 'userSessions',
     expires: 1000 * 60 * 60 * 24, // cookie expire in mongo 24 hrs
     connectionOptions: {
@@ -136,7 +142,7 @@ var user_details_server = new Schema({
 }, {
     collection: 'user_details'
 });
-var connect1 = mongoose.createConnection('mongodb+srv://C6hivgPRCjxKGF9f:yW3c3fc8vpM0ego368z80271RCH@o2plusdatabase.vwl00.mongodb.net/userdetails?retryWrites=true&w=majority', { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
+var connect1 = mongoose.createConnection(process.env.USER_DETAILS, { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
 var user_details_model = connect1.model('user_details_model', user_details_server);
 
 var subjectlist_server = new Schema({
@@ -159,7 +165,7 @@ var subjectlist_server = new Schema({
 });
 
 
-var connect2 = mongoose.createConnection('mongodb+srv://C6hivgPRCjxKGF9f:yW3c3fc8vpM0ego368z80271RCH@o2plusdatabase.vwl00.mongodb.net/subjectlistdetails?retryWrites=true&w=majority', { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
+var connect2 = mongoose.createConnection( process.env.SUBJECTLIST_DETAILS, { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
 var subjectlist_model = connect2.model('subjectlist_model', subjectlist_server);
 
 
@@ -195,13 +201,6 @@ app.get('/registration_page', function(req, res) {
     }
 })
 
-    error_bot.sendMessage(telegram_admin, "hi").then(function(resp) {
-        console.log('ADMIN updated about error !!!')
-    }).catch(function(error) {
-        if (error.response && error.response.statusCode === 403) {
-            console.log("ADMIN is not connected to o2plus_error_bot !!!");
-        }
-    });
 
 function telegram_route_error_bot(unique_id, error) {
     var err_response_user = "__Error User__ : " + unique_id;
