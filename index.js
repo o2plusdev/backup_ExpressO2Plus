@@ -26,7 +26,7 @@ const cryptr = new Cryptr('IPx3zITsOPot5Vq60Y6L');
 
 
 var server = 1;
-var browser_version = 'Gecko/78.0';
+var browser_version = 'e';//'Gecko/78.0';
 // server 1 keys
 const error_token = '1782210941:AAFCkpPQj_Dtuke0iPo5McguasWefmCkgMU';
 const new_reg_token = '1718850510:AAHRqMUD9tguJhvf2iysBpg8pCh-rCG-RLc';
@@ -166,7 +166,26 @@ var subjectlist_model = connect2.model('subjectlist_model', subjectlist_server);
 app.get('/registration_page', function(req, res) {
 	try{
 		var sess = req.session;
-		res.send(sess)
+        //var token = JSON.parse(cryptr.decrypt(req.query.token));
+        var token = JSON.parse(cryptr.decrypt('698ef0127cbc150ec4a64208ec86d8ea1c2bda73e5f9be7f975686047ea2c1987e4b8225b238479d8387e359b68ee8df2e86bdd81d8cc3ab6f49b1119ad1568207f1739628424131c6cef1fa576be76d9a8f2f1e33ba12226e11674ddf4c3973fac90cb401a0e2bd5dc1b31badfd8c0a550f1faaf66ef3eb15bcbeb80f6fb8402f0f86b7692d32dbf08251c1117d04e3f0db0df3218bd6fb20e59b732305f34b2e0e6cf53da800b8ad78cb14ba3a0e62917d978dc0c3908951e1ef14ab74fab7e51e2ec6412474b1cd7a0c1679404bed4b230d55b3bee76680df6797ffa1c994f21e34fda1f1a3194bd7bc6d60969b5d94c0ee0e6cf691a5ef213ff01dd4e2c33d2d166de8342a5315ea047e84ae5a157dc119cb64ff371d39cccc544efdeaee51b229cbce33148dcbdeeaf38679275acffa3eea2435d25f2cf1911edfc03a7cdb98604f53eddc0c8ec220c242e6c0675c57a5e4a4a9a75350d4f3e14639946831bd9646657c8d44470ea5f82bc003a7'))
+        sess.browser_validity = req.useragent.source;
+        sess.unique_id = token.unique_id;
+        sess.user_ip = token.user_ip;
+        sess.user_country = token.user_country;
+        sess.user_city = token.user_city;
+        sess.user_state = token.user_state;
+        sess.build_product = token.build_product;
+        sess.build_model = token.build_model;
+        sess.build_manufacturer = token.build_manufacturer;
+        var past_time = token.timestamp;
+        var present_time = moment().format('x');
+        var time_diff = present_time - past_time;
+        console.log(time_diff)
+        if (sess.user_ip == req.ip && time_diff <= 500000000000000 && sess.browser_validity.includes(browser_version)) {
+            res.render("registration.ejs");
+        } else {
+            res.render("error.ejs");
+        }
 	} catch (error) {
         console.log(error);
         res.render("error.ejs");
