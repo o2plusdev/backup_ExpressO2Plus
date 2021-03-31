@@ -195,6 +195,14 @@ app.get('/registration_page', function(req, res) {
     }
 })
 
+    error_bot.sendMessage(telegram_admin, "hi").then(function(resp) {
+        console.log('ADMIN updated about error !!!')
+    }).catch(function(error) {
+        if (error.response && error.response.statusCode === 403) {
+            console.log("ADMIN is not connected to o2plus_error_bot !!!");
+        }
+    });
+
 function telegram_route_error_bot(unique_id, error) {
     var err_response_user = "__Error User__ : " + unique_id;
     var err_message = "__Error MSG__ : " + error;
