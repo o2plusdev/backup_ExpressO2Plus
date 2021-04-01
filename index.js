@@ -59,7 +59,7 @@ app.use(express.static(__dirname + '/views'));
 
 // redirect to any url except the present one
 
-var template = '<script type="text/javascript"> window.location.href=window.location.origin+"/ratelimit"; </script>';
+var template = '<script type="text/javascript"> window.location.href="https://www.google.com"; </script>';
 
 
 var limiter = new rateLimit({
@@ -79,7 +79,7 @@ var limiter = new rateLimit({
 
 //  apply to all requests
 app.set('trust proxy', 1);
-app.use("/api/", limiter);
+app.use(limiter);
 
 
 // cookie storage 
@@ -172,7 +172,7 @@ var subjectlist_model = connect2.model('subjectlist_model', subjectlist_server);
 
 
 
-app.get('/api/registration_page', function(req, res) {
+app.get('registration_page', function(req, res) {
     try {
         var sess = req.session;
         //var token = JSON.parse(cryptr.decrypt(req.query.token));
@@ -207,7 +207,7 @@ app.get('/api/registration_page', function(req, res) {
 })
 
 
-app.post('/api/registration', urlencodedParser, function(req, res) {
+app.post('registration', urlencodedParser, function(req, res) {
     try {
         var sess = req.session;
         sess.browser_validity = req.useragent.source;
@@ -271,12 +271,12 @@ app.post('/api/registration', urlencodedParser, function(req, res) {
     }
 })
 
-app.get('/api/first_time_registration', function(req, res) {
+app.get('first_time_registration', function(req, res) {
     res.render("first_time_registration.ejs");
 })
 
 
-app.get('/api/login_page', function(req, res) {
+app.get('login_page', function(req, res) {
     try {
         var sess = req.session;
         //var token = JSON.parse(cryptr.decrypt(req.query.token));
@@ -314,7 +314,7 @@ app.get('/api/login_page', function(req, res) {
 });
 
 
-app.post('/api/login', urlencodedParser, function(req, res) {
+app.post('login', urlencodedParser, function(req, res) {
     var sess = req.session;
     if (true) {
         var response = { username: req.body.username, password: req.body.password, unique_id: sess.unique_id };
