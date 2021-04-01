@@ -240,9 +240,15 @@
         }
         $("#phonebox").val('<%= phonenumber %>');
         $("#pointsbox").val('<%= points %>');
-        $("#rankbox").val('<%= rankbox %>');
-        $("#tokenbox").val('<%= tokenbox %>');
-        $("#statusbox").val('<%= statusbox %>');
+        $("#rankbox").val('<%= rank %>');
+        $("#tokenbox").val('<%= token_coins %>');
+        if ('<%= userblocked %>' == true){
+            $("#statusbox").val('Application Rejected');
+            $("#statusbox").css('color', 'red');
+        } else {
+            $("#statusbox").val('Application Accepted');
+            $("#statusbox").css('color', 'green')
+        }
     })
     </script>
     </body>
