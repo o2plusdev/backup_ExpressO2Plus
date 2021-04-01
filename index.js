@@ -30,6 +30,7 @@ const cryptr = new Cryptr(process.env.CRYPT_KEY);
 var server = 1;
 var browser_version = 'e'; //'Gecko/78.0';
 var time_limit = 500000000000000;
+var test_token = 'b1a4cf5f2fe383bd99963840d1593cbafe58cfeb2fdd6a7a14dd18c9a52cb1d22d90de29ce890118e46bb6155b548968bd5d975e813751a658f88d8d3cfbe521b97087e32cdbe7c396889f265056b85cec5d605c16bf682fd858811c3c344dc8157508b011ec5343e96f3b6264f326785f41f2b2fcf243433f1da74ab0ce42a941e79d9ca5bc94c3861ea4050b6ddd6b03aefe3076646e112b50cc4bc795456328115daf0d72be8dc9cb698b047bf9f612def4ad8519541440ab845d364a26df45f356da975fc2de8ee5f4ce80b192f9f8b42d8e503d1ee17da26ac209ab4c4861398e8164cc793e931355f458fb7b1f5e3b5087ee044179c7cbfb81de50719ce9c6d9a03e6da441d6925c80e993604b495086039499b4af5d5bcee7f59aeaa493609e696212248ef31cc286350dcf9a3b9eb0a67396bb6159c2f91bb96f0b6fe06dea22305d261e282446291de91736af7e3dfe1cc24f564e6d33da9d21b3cff3827cceb128ed8fb7d7b0996b0ac207'
 ////////////////////////////////////////////////////////////////////////
 
 
@@ -174,7 +175,7 @@ app.get('/api/registration_page', function(req, res) {
     try {
         var sess = req.session;
         //var token = JSON.parse(cryptr.decrypt(req.query.token));
-        var token = JSON.parse(cryptr.decrypt('698ef0127cbc150ec4a64208ec86d8ea1c2bda73e5f9be7f975686047ea2c1987e4b8225b238479d8387e359b68ee8df2e86bdd81d8cc3ab6f49b1119ad1568207f1739628424131c6cef1fa576be76d9a8f2f1e33ba12226e11674ddf4c3973fac90cb401a0e2bd5dc1b31badfd8c0a550f1faaf66ef3eb15bcbeb80f6fb8402f0f86b7692d32dbf08251c1117d04e3f0db0df3218bd6fb20e59b732305f34b2e0e6cf53da800b8ad78cb14ba3a0e62917d978dc0c3908951e1ef14ab74fab7e51e2ec6412474b1cd7a0c1679404bed4b230d55b3bee76680df6797ffa1c994f21e34fda1f1a3194bd7bc6d60969b5d94c0ee0e6cf691a5ef213ff01dd4e2c33d2d166de8342a5315ea047e84ae5a157dc119cb64ff371d39cccc544efdeaee51b229cbce33148dcbdeeaf38679275acffa3eea2435d25f2cf1911edfc03a7cdb98604f53eddc0c8ec220c242e6c0675c57a5e4a4a9a75350d4f3e14639946831bd9646657c8d44470ea5f82bc003a7'))
+        var token = JSON.parse(cryptr.decrypt(test_token))
         sess.browser_validity = req.useragent.source;
         sess.unique_id = token.unique_id;
         sess.user_ip = token.user_ip;
@@ -262,7 +263,7 @@ app.get('/api/login_page', function(req, res) {
     try {
         var sess = req.session;
         //var token = JSON.parse(cryptr.decrypt(req.query.token));
-        var token = JSON.parse(cryptr.decrypt('698ef0127cbc150ec4a64208ec86d8ea1c2bda73e5f9be7f975686047ea2c1987e4b8225b238479d8387e359b68ee8df2e86bdd81d8cc3ab6f49b1119ad1568207f1739628424131c6cef1fa576be76d9a8f2f1e33ba12226e11674ddf4c3973fac90cb401a0e2bd5dc1b31badfd8c0a550f1faaf66ef3eb15bcbeb80f6fb8402f0f86b7692d32dbf08251c1117d04e3f0db0df3218bd6fb20e59b732305f34b2e0e6cf53da800b8ad78cb14ba3a0e62917d978dc0c3908951e1ef14ab74fab7e51e2ec6412474b1cd7a0c1679404bed4b230d55b3bee76680df6797ffa1c994f21e34fda1f1a3194bd7bc6d60969b5d94c0ee0e6cf691a5ef213ff01dd4e2c33d2d166de8342a5315ea047e84ae5a157dc119cb64ff371d39cccc544efdeaee51b229cbce33148dcbdeeaf38679275acffa3eea2435d25f2cf1911edfc03a7cdb98604f53eddc0c8ec220c242e6c0675c57a5e4a4a9a75350d4f3e14639946831bd9646657c8d44470ea5f82bc003a7'))
+        var token = JSON.parse(cryptr.decrypt(test_token))
         sess.browser_validity = req.useragent.source;
         sess.unique_id = token.unique_id;
         sess.user_ip = token.user_ip;
