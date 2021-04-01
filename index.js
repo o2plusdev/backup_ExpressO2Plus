@@ -24,6 +24,7 @@ const rateLimit = require("express-rate-limit");
 var MongoStore = require('rate-limit-mongo');
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr(process.env.CRYPT_KEY);
+const sendSeekable = require('send-seekable');
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -50,7 +51,7 @@ app.use(useragent.express());
 app.use(expressip().getIpInfoMiddleware);
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/views'));
-
+app.use(sendSeekable);
 //app.use(
 //    helmet({
 //        contentSecurityPolicy: false,
