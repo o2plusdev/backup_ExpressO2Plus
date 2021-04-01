@@ -59,7 +59,7 @@ app.use(express.static(__dirname + '/views'));
 
 // redirect to any url except the present one
 
-var template = '<script type="text/javascript"> window.location.href="https://www.google.com"; </script>';
+var template = '<script type="text/javascript"> window.location.href="about:blank"; </script>';
 
 
 var limiter = new rateLimit({
