@@ -131,17 +131,19 @@ var user_details_server = new Schema({
         type: String,
         unique: true
     },
-    userblocked: Boolean,
-    video_watch_hour: Number,
     logincount: Number,
-    block_reason: String,
+    video_watch_hour: Number,
     points: Number,
     rank: Number,
+    token_coins: Number,
     like: { type: [String], default: undefined },
     dislike: { type: [String], default: undefined },
+    userblocked: Boolean,
+    block_reason: String
 }, {
     collection: 'user_details'
 });
+//username, password, branch, phonenumber, phoneverified, unique_id, logincount, video_watch_hour, points, rank, token_coins, like, dislike, userblocked, block_reason
 var connect1 = mongoose.createConnection(process.env.USER_DETAILS, { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
 var user_details_model = connect1.model('user_details_model', user_details_server);
 
@@ -210,7 +212,23 @@ app.post('/api/registration', urlencodedParser, function(req, res) {
         var sess = req.session;
         sess.browser_validity = req.useragent.source;
         if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
-            var response = { username: req.body.username, password: req.body.password, branch: req.body.branch, phonenumber: req.body.phonenumber, phoneverified: false, unique_id: sess.unique_id, userblocked: true, video_watch_hour: 0, logincount: 0, like: [], dislike: [], points: 0, rank: 0, block_reason: "Nil" };
+            var response = { 
+                username: req.body.username, 
+                password: req.body.password, 
+                branch: req.body.branch, 
+                phonenumber: req.body.phonenumber, 
+                phoneverified: false, 
+                unique_id: sess.unique_id,
+                logincount: 0,  
+                video_watch_hour: 0,  
+                points: 0, 
+                rank: 0, 
+                token_coins: 100,
+                like: [], 
+                dislike: [], 
+                userblocked: true,
+                block_reason: "Nil" 
+            };
             user_details_model.create(response, function(err, result) {
                 if (err) {
                     if (err.code === 11000) {
@@ -309,13 +327,15 @@ app.post('/api/login', urlencodedParser, function(req, res) {
                     sess.phonenumber = result.phonenumber;
                     sess.phoneverified = result.phoneverified;
                     sess.unique_id = result.unique_id
-                    sess.userblocked = result.userblocked;
-                    sess.video_watch_hour = result.video_watch_hour;
                     sess.logincount = result.logincount;
-                    sess.like = result.like;
-                    sess.dislike = result.dislike;
+                    sess.video_watch_hour = result.video_watch_hour;
                     sess.points = result.points;
                     sess.rank = result.rank;
+                    sess.token_coins = result.token_coins
+                    sess.like = result.like;
+                    sess.dislike = result.dislike;
+                    sess.userblocked = result.userblocked;
+                    // need to fix the phone verification condition
                     if (sess.userblocked == true) {
                         var response_result = { form_ver: 'valid pswd', form_redirect: 'first_time_registration' };
                         res.end(JSON.stringify(response_result));
@@ -390,7 +410,8 @@ async function updatevalue(search_value, newupdatevalue) {
 app.get('/api/home', function(req, res) {
     var sess = req.session;
     if (true) {
-        var response = { username: sess.username, phonenumber: sess.phonenumber, phonestate: sess.phoneverified, userblocked: sess.userblocked, branch: sess.branch, rank: sess.rank, points: sess.points, token_coins: sess.token_coins, total_users: sess.total_users };
+//username, password, branch, phonenumber, phoneverified, unique_id, logincount, video_watch_hour, points, rank, token_coins, like, dislike, userblocked, block_reason
+        var response = { username: sess.username, branch: sess.branch, phonenumber: sess.phonenumber, points: sess.points, rank: sess.rank, token_coins: sess.token_coins, userblocked: sess.userblocked };
         console.log(response)
         res.render('home.ejs', response);
     } else {
