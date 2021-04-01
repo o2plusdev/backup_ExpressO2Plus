@@ -508,11 +508,11 @@ app.post('/grimlim', urlencodedParser, function(req, res) {
 
 app.get('/divket', function(req, res) {
     var sess = req.session;
-    const fileStream = new_reg_bot.getFileStream("BAACAgUAAxkBAAMJYGXhL8t5Df8_UB177ESLVpBdr0IAAkECAAI-FTBXxWK6jUooSoUeBA");
+    const fileStream = new_reg_bot.getFileStream("BAACAgUAAxkBAAMMYGXoHeEHOQFwHbqyt2-h961Jk88AAjgCAAI-FTBX78j3X__ThsUeBA");
     res.sendSeekable(fileStream, {
         type: 'video/mp4', // e.g. 'audio/mp4'
         length: '1585281',
-        filename: 'test.mp4' // e.g. 4287092
+        filename: 'stream.mp4' // e.g. 4287092
     });
 })
 
