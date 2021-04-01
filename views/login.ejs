@@ -65,7 +65,7 @@
     function validateloginForm() {
         var form = $('#loginjs');
         post_data = $("#loginjs").serializeArray();
-        $.post('/api/login', post_data, function(data, e) {
+        $.post('/login', post_data, function(data, e) {
             data_json = JSON.parse(data);
             console.log(data_json);
             if (data_json.form_ver == 'invalid user') {

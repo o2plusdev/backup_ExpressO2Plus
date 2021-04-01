@@ -83,7 +83,7 @@
 
     function firstregjs() {
         var base_url = window.location.origin;
-        window.location.replace(base_url + "/api/first_time_registration");
+        window.location.replace(base_url + "first_time_registration");
     }
 
 
@@ -91,7 +91,7 @@
     function validateregForm() {
         var form = $('#registrationjs');
         var post_data = $("#registrationjs").serializeArray();
-        $.post('/api/registration', post_data, function(data, e) {
+        $.post('/registration', post_data, function(data, e) {
             var data_json = JSON.parse(data);
             if (data_json.form_success) {
                 setTimeout(function() {
