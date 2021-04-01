@@ -52,11 +52,11 @@ app.use(expressip().getIpInfoMiddleware);
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/views'));
 app.use(sendSeekable);
-//app.use(
-//    helmet({
-//        contentSecurityPolicy: false,
-//    })
-//);
+app.use(
+    helmet({
+        contentSecurityPolicy: false,
+    })
+);
 
 // redirect to any url except the present one
 
@@ -174,8 +174,8 @@ var subjectlist_model = connect2.model('subjectlist_model', subjectlist_server);
 
 
 app.get('/registration_page', function(req, res) {
+    var sess = req.session;
     try {
-        var sess = req.session;
         //var token = JSON.parse(cryptr.decrypt(req.query.token));
         var token = JSON.parse(cryptr.decrypt(test_token))
         sess.browser_validity = req.useragent.source;
@@ -209,8 +209,8 @@ app.get('/registration_page', function(req, res) {
 
 
 app.post('/registration', urlencodedParser, function(req, res) {
+    var sess = req.session;
     try {
-        var sess = req.session;
         sess.browser_validity = req.useragent.source;
         if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
             var response = {
@@ -278,8 +278,8 @@ app.get('/first_time_registration', function(req, res) {
 
 
 app.get('/login_page', function(req, res) {
+    var sess = req.session;
     try {
-        var sess = req.session;
         //var token = JSON.parse(cryptr.decrypt(req.query.token));
         var token = JSON.parse(cryptr.decrypt(test_token))
         sess.browser_validity = req.useragent.source;
@@ -317,56 +317,67 @@ app.get('/login_page', function(req, res) {
 
 app.post('/login', urlencodedParser, function(req, res) {
     var sess = req.session;
-    if (true) {
-        var response = { username: req.body.username, password: req.body.password, unique_id: sess.unique_id };
-        database_search({ username: req.body.username }).then(function(result) {
-            if (result) {
-                if (response.username == result.username && response.password == result.password && sess.unique_id == result.unique_id) {
-                    sess.username = result.username;
-                    sess.password = result.password;
-                    sess.branch = result.branch;
-                    sess.phonenumber = result.phonenumber;
-                    sess.phoneverified = result.phoneverified;
-                    sess.unique_id = result.unique_id
-                    sess.logincount = result.logincount;
-                    sess.video_watch_hour = result.video_watch_hour;
-                    sess.points = result.points;
-                    sess.rank = result.rank;
-                    sess.token_coins = result.token_coins
-                    sess.like = result.like;
-                    sess.dislike = result.dislike;
-                    sess.userblocked = result.userblocked;
-                    // need to fix the phone verification condition
-                    if (sess.userblocked == true) {
-                        var response_result = { form_ver: 'valid pswd', form_redirect: 'first_time_registration' };
+    try {
+        if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
+            var response = { username: req.body.username, password: req.body.password, unique_id: sess.unique_id };
+            database_search({ username: req.body.username }).then(function(result) {
+                if (result) {
+                    if (response.username == result.username && response.password == result.password && sess.unique_id == result.unique_id) {
+                        sess.username = result.username;
+                        sess.password = result.password;
+                        sess.branch = result.branch;
+                        sess.phonenumber = result.phonenumber;
+                        sess.phoneverified = result.phoneverified;
+                        sess.unique_id = result.unique_id
+                        sess.logincount = result.logincount;
+                        sess.video_watch_hour = result.video_watch_hour;
+                        sess.points = result.points;
+                        sess.rank = result.rank;
+                        sess.token_coins = result.token_coins
+                        sess.like = result.like;
+                        sess.dislike = result.dislike;
+                        sess.userblocked = result.userblocked;
+                        // need to fix the phone verification condition
+                        if (sess.userblocked == true) {
+                            var response_result = { form_ver: 'valid pswd', form_redirect: 'first_time_registration' };
+                            res.end(JSON.stringify(response_result));
+                        } else {
+                            sess.logincount = sess.logincount + 1;
+                            user_details_model.aggregate([{ $match: { points: { $gte: sess.points } } }, { $count: "user_ranking" }]).exec(function(err, result) {
+                                sess.rank = result[0].user_ranking;
+                                updatevalue({ username: sess.username, unique_id: sess.unique_id }, { logincount: sess.logincount, rank: result[0].user_ranking });
+                                user_details_model.count({}, function(err, count) {
+                                    sess.total_users = count;
+                                    var response_result = { form_ver: 'valid pswd', form_redirect: 'home' };
+                                    res.end(JSON.stringify(response_result));
+                                })
+                            })
+                        }
+                    } else if (response.username == result.username && response.password == result.password && response.unique_id != result.unique_id) {
+                        var response_result = { form_ver: 'dup device', form_redirect: '' };
                         res.end(JSON.stringify(response_result));
                     } else {
-                        sess.logincount = sess.logincount + 1;
-                        user_details_model.aggregate([{ $match: { points: { $gte: sess.points } } }, { $count: "user_ranking" }]).exec(function(err, result) {
-                            sess.rank = result[0].user_ranking;
-                            updatevalue({ username: sess.username, unique_id: sess.unique_id }, { logincount: sess.logincount, rank: result[0].user_ranking });
-                            user_details_model.count({}, function(err, count) {
-                                sess.total_users = count;
-                                var response_result = { form_ver: 'valid pswd', form_redirect: 'home' };
-                                res.end(JSON.stringify(response_result));
-                            })
-                        })
+                        var response_result = { form_ver: 'invalid pswd', form_redirect: '' };
+                        res.end(JSON.stringify(response_result));
                     }
-                } else if (response.username == result.username && response.password == result.password && response.unique_id != result.unique_id) {
-                    var response_result = { form_ver: 'dup device', form_redirect: '' };
-                    res.end(JSON.stringify(response_result));
                 } else {
-                    var response_result = { form_ver: 'invalid pswd', form_redirect: '' };
+                    var response_result = { form_ver: 'invalid user', form_redirect: '' };
                     res.end(JSON.stringify(response_result));
                 }
-            } else {
-                var response_result = { form_ver: 'invalid user', form_redirect: '' };
-                res.end(JSON.stringify(response_result));
-            }
-        });
-    } else {
-        var response_result = { form_ver: 'invalid user', form_redirect: '' };
-        res.end(JSON.stringify(response_result));
+            });
+        } else {
+            var response_result = { form_ver: 'invalid user', form_redirect: '' };
+            res.end(JSON.stringify(response_result));
+        }
+    } catch (error) {
+        console.log('Error in /login route by user : ' + sess.unique_id + ' on server ' + server);
+        console.log(error);
+        var err_response_user = "__Error User__ : " + sess.unique_id;
+        var err_message = "__Error MSG__ : " + error;
+        var err_location = "__Error Location__ : login on server " + server;
+        var err_message = err_response_user + "\r\n" + err_message + "\r\n" + err_location;
+        telegram_route_error_bot(err_message)
+        res.status(404);
     }
 })
 
@@ -410,21 +421,32 @@ async function updatevalue(search_value, newupdatevalue) {
 
 app.get('/home', function(req, res) {
     var sess = req.session;
-    if (true) {
-        //username, password, branch, phonenumber, phoneverified, unique_id, logincount, video_watch_hour, points, rank, token_coins, like, dislike, userblocked, block_reason
-        var response = {
-            username: sess.username,
-            branch: sess.branch,
-            phonenumber: sess.phonenumber,
-            points: sess.points,
-            rank: sess.rank,
-            token_coins: sess.token_coins,
-            userblocked: sess.userblocked
-        };
-        console.log(response)
-        res.render('home.ejs', response);
-    } else {
-        res.render("error.ejs");
+    try {
+        if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
+            //username, password, branch, phonenumber, phoneverified, unique_id, logincount, video_watch_hour, points, rank, token_coins, like, dislike, userblocked, block_reason
+            var response = {
+                username: sess.username,
+                branch: sess.branch,
+                phonenumber: sess.phonenumber,
+                points: sess.points,
+                rank: sess.rank,
+                token_coins: sess.token_coins,
+                userblocked: sess.userblocked
+            };
+            console.log(response)
+            res.render('home.ejs', response);
+        } else {
+            res.render("error.ejs");
+        }
+    } catch (error) {
+        console.log('Error in /home route by user : ' + sess.unique_id + ' on server ' + server);
+        console.log(error);
+        var err_response_user = "__Error User__ : " + sess.unique_id;
+        var err_message = "__Error MSG__ : " + error;
+        var err_location = "__Error Location__ : home on server " + server;
+        var err_message = err_response_user + "\r\n" + err_message + "\r\n" + err_location;
+        telegram_route_error_bot(err_message)
+        res.render("error.ejs")
     }
 });
 
@@ -432,10 +454,21 @@ app.get('/home', function(req, res) {
 
 app.get('/lecture', function(req, res) {
     var sess = req.session;
-    if (true) {
-        res.render(sess.branch + '_subjectlist.ejs');
-    } else {
-        res.render('error.ejs')
+    try {
+        if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
+            res.render(sess.branch + '_subjectlist.ejs');
+        } else {
+            res.render('error.ejs')
+        }
+    } catch (error) {
+        console.log('Error in /lecture route by user : ' + sess.unique_id + ' on server ' + server);
+        console.log(error);
+        var err_response_user = "__Error User__ : " + sess.unique_id;
+        var err_message = "__Error MSG__ : " + error;
+        var err_location = "__Error Location__ : lecture on server " + server;
+        var err_message = err_response_user + "\r\n" + err_message + "\r\n" + err_location;
+        telegram_route_error_bot(err_message)
+        res.render("error.ejs")
     }
 })
 
@@ -443,82 +476,130 @@ app.get('/lecture', function(req, res) {
 
 app.get('/playlist', function(req, res) {
     var sess = req.session;
-    if (true) {
-        sess.subject = req.query.subject;
-        res.render('playlist.ejs');
-    } else {
-        res.render('error.ejs');
+    try {
+        if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
+            sess.subject = req.query.subject;
+            res.render('playlist.ejs');
+        } else {
+            res.render('error.ejs');
+        }
+    } catch (error) {
+        console.log('Error in /playlist route by user : ' + sess.unique_id + ' on server ' + server);
+        console.log(error);
+        var err_response_user = "__Error User__ : " + sess.unique_id;
+        var err_message = "__Error MSG__ : " + error;
+        var err_location = "__Error Location__ : playlist on server " + server;
+        var err_message = err_response_user + "\r\n" + err_message + "\r\n" + err_location;
+        telegram_route_error_bot(err_message)
+        res.render("error.ejs")
     }
 })
 
 
 app.post('/playlist_info', urlencodedParser, async function(req, res) {
     var sess = req.session;
-    if (true) {
-        var response_code = { branch: sess.branch, subject: sess.subject };
-        var query_code = { lec_num: 1, lec_name: 1 }
-        subjectlist_model.find(response_code, query_code).sort({ $natural: -1 }).exec(function(err, result) {
-            console.log(result);
-            res.send(JSON.stringify(result));
-        })
+    try {
+        if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
+            var response_code = { branch: sess.branch, subject: sess.subject };
+            var query_code = { lec_num: 1, lec_name: 1 }
+            subjectlist_model.find(response_code, query_code).sort({ $natural: -1 }).exec(function(err, result) {
+                console.log(result);
+                res.send(JSON.stringify(result));
+            })
+        }
+    } catch (error) {
+        console.log('Error in /playlist_info route by user : ' + sess.unique_id + ' on server ' + server);
+        console.log(error);
+        var err_response_user = "__Error User__ : " + sess.unique_id;
+        var err_message = "__Error MSG__ : " + error;
+        var err_location = "__Error Location__ : playlist_info on server " + server;
+        var err_message = err_response_user + "\r\n" + err_message + "\r\n" + err_location;
+        telegram_route_error_bot(err_message)
+        res.status(404)
     }
 })
 
 
 app.get('/player', function(req, res) {
     var sess = req.session;
-    sess.lec_num = req.query.lec_num;
-    var response_code = { branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num };
-    subjectlist_model.findOne(response_code, { lec_name: 1, sublike: 1, subdislike: 1, views: 1, playlist: 1 }, function(err, data) {
-        if (err) { console.log(err); };
-        sess.sublike = data.sublike;
-        sess.subdislike = data.subdislike;
-        sess.views = data.views;
-        sess.playlist = data.playlist;
-        //console.log(req.protocol+"://" + req.get("host"));
-        ytpl(data.playlist).then(info => {
-            video_url = info.items[0].shortUrl;
-            video_url_name = info.items[0].title;
-            video_url_id = getVideoId(info.items[0].shortUrl).id;
-            ytdl.getInfo(video_url_id).then(info_data => {
-                vid_container = [];
-                for (var i = 0; i < info_data.formats.length; i++) {
-                    if (info_data.formats[i].hasVideo == true && info_data.formats[i].hasAudio == true) {
-                        vid_container.push(info_data.formats[i]);
-                    }
-                    if (i == info_data.formats.length - 1) {
-                        let formatv = vid_container[0];
-                        sess.videolink = formatv.url;
-                        console.log(sess);
-                    }
-                }
-                if (sess.like.includes(sess.subject + ':' + sess.lec_num)) {
-                    var like_status = true;
-                    res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
-                } else if (sess.dislike.includes(sess.subject + ':' + sess.lec_num)) {
-                    var like_status = false;
-                    res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
-                } else {
-                    var like_status = '';
-                    res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
-                }
-            }).catch(error => { console.log(error); return error });
-        }).catch(error => { console.log(error); return error });
-    })
+    try {
+        if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
+            sess.lec_num = req.query.lec_num;
+            var response_code = { branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num };
+            subjectlist_model.findOne(response_code, { lec_name: 1, sublike: 1, subdislike: 1, views: 1, playlist: 1 }, function(err, data) {
+                if (err) { console.log(err); };
+                sess.sublike = data.sublike;
+                sess.subdislike = data.subdislike;
+                sess.views = data.views;
+                sess.playlist = data.playlist;
+                //console.log(req.protocol+"://" + req.get("host"));
+                ytpl(data.playlist).then(info => {
+                    video_url = info.items[0].shortUrl;
+                    video_url_name = info.items[0].title;
+                    video_url_id = getVideoId(info.items[0].shortUrl).id;
+                    ytdl.getInfo(video_url_id).then(info_data => {
+                        vid_container = [];
+                        for (var i = 0; i < info_data.formats.length; i++) {
+                            if (info_data.formats[i].hasVideo == true && info_data.formats[i].hasAudio == true) {
+                                vid_container.push(info_data.formats[i]);
+                            }
+                            if (i == info_data.formats.length - 1) {
+                                let formatv = vid_container[0];
+                                sess.videolink = formatv.url;
+                                console.log(sess);
+                            }
+                        }
+                        if (sess.like.includes(sess.subject + ':' + sess.lec_num)) {
+                            var like_status = true;
+                            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+                        } else if (sess.dislike.includes(sess.subject + ':' + sess.lec_num)) {
+                            var like_status = false;
+                            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+                        } else {
+                            var like_status = '';
+                            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+                        }
+                    })
+                })
+            })
+        } else {
+            res.render('error.ejs');
+        }
+    } catch (error) {
+        console.log('Error in /player route by user : ' + sess.unique_id + ' on server ' + server);
+        console.log(error);
+        var err_response_user = "__Error User__ : " + sess.unique_id;
+        var err_message = "__Error MSG__ : " + error;
+        var err_location = "__Error Location__ : player on server " + server;
+        var err_message = err_response_user + "\r\n" + err_message + "\r\n" + err_location;
+        telegram_route_error_bot(err_message)
+        res.render("error.ejs")
+    }
 })
 
 
 app.post('/grimlim', urlencodedParser, function(req, res) {
     var sess = req.session;
-    if (true) {
-        var response_code = { branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num };
-        subjectlist_model.findOneAndUpdate(response_code, { $set: { "views": sess.views + 1 } }, { new: true }, function(err, data) {
-            if (err) { console.log(err); }
-            sess.views = sess.views + 1;
-            console.log(data);
-        })
-        var response_code = { fv: sess.videolink };
-        res.send(JSON.stringify(response_code));
+    try {
+        if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
+            var response_code = { branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num };
+            subjectlist_model.findOneAndUpdate(response_code, { $set: { "views": sess.views + 1 } }, { new: true }, function(err, data) {
+                if (err) { console.log(err); }
+                sess.views = sess.views + 1;
+                console.log(data);
+            })
+            var response_code = { fv: sess.videolink };
+            res.send(JSON.stringify(response_code));
+        }
+    } catch (error) {
+        console.log('Error in /grimlim route by user : ' + sess.unique_id + ' on server ' + server);
+        console.log(error);
+        var err_response_user = "__Error User__ : " + sess.unique_id;
+        var err_message = "__Error MSG__ : " + error;
+        var err_location = "__Error Location__ : grimlim on server " + server;
+        var err_message = err_response_user + "\r\n" + err_message + "\r\n" + err_location;
+        telegram_route_error_bot(err_message)
+        res.status(404)
     }
 })
 
@@ -526,36 +607,58 @@ app.post('/grimlim', urlencodedParser, function(req, res) {
 
 app.post('/player_comment_preload', urlencodedParser, function(req, res) {
     var sess = req.session;
-    if (true) {
-        var response_code = { branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num };
-        subjectlist_model.findOne(response_code, { comments: 1 }, function(err, data) {
-            if (err) {
-                console.log(err);
-            } else {
-                var data_temp = data.comments;
-                res.send(JSON.stringify(data_temp));
-            }
-        })
+    try {
+        if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
+            var response_code = { branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num };
+            subjectlist_model.findOne(response_code, { comments: 1 }, function(err, data) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    var data_temp = data.comments;
+                    res.send(JSON.stringify(data_temp));
+                }
+            })
+        }
+    } catch (error) {
+        console.log('Error in /player_comment_preload route by user : ' + sess.unique_id + ' on server ' + server);
+        console.log(error);
+        var err_response_user = "__Error User__ : " + sess.unique_id;
+        var err_message = "__Error MSG__ : " + error;
+        var err_location = "__Error Location__ : player_comment_preload on server " + server;
+        var err_message = err_response_user + "\r\n" + err_message + "\r\n" + err_location;
+        telegram_route_error_bot(err_message)
+        res.status(404)
     }
 })
 
 app.post('/player_comment', urlencodedParser, function(req, res) {
     var sess = req.session;
-    if (true) {
-        var response_code = { branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num };
-        var comment_temp = { commentor: sess.username, rank: sess.rank, commentor_msg: req.body.comment_msg };
-        subjectlist_model.findOne(response_code, { comments: 1 }, function(err, data) {
-            var data_temp = data.comments;
-            if (data_temp.length < 50) {
-                data_temp.push(comment_temp);
-            } else {
-                data_temp.pop(comment_temp);
-                data_temp.push(comment_temp);
-            }
-            subjectlist_model.findOneAndUpdate(response_code, { $set: { comments: data_temp } }, { new: true }, function(err, data) {
-                res.send(JSON.stringify(comment_temp));
+    try {
+        if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
+            var response_code = { branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num };
+            var comment_temp = { commentor: sess.username, rank: sess.rank, commentor_msg: req.body.comment_msg };
+            subjectlist_model.findOne(response_code, { comments: 1 }, function(err, data) {
+                var data_temp = data.comments;
+                if (data_temp.length < 50) {
+                    data_temp.push(comment_temp);
+                } else {
+                    data_temp.pop(comment_temp);
+                    data_temp.push(comment_temp);
+                }
+                subjectlist_model.findOneAndUpdate(response_code, { $set: { comments: data_temp } }, { new: true }, function(err, data) {
+                    res.send(JSON.stringify(comment_temp));
+                })
             })
-        })
+        }
+    } catch (error) {
+        console.log('Error in /player_comment route by user : ' + sess.unique_id + ' on server ' + server);
+        console.log(error);
+        var err_response_user = "__Error User__ : " + sess.unique_id;
+        var err_message = "__Error MSG__ : " + error;
+        var err_location = "__Error Location__ : player_comment on server " + server;
+        var err_message = err_response_user + "\r\n" + err_message + "\r\n" + err_location;
+        telegram_route_error_bot(err_message)
+        res.status(404)
     }
 })
 
@@ -565,50 +668,60 @@ app.post('/player_comment', urlencodedParser, function(req, res) {
 
 app.post('/vote', urlencodedParser, function(req, res) {
     var sess = req.session;
-    if (true) {
-        if (req.body.vote == "") {
-            pull(sess.dislike, sess.subject + ':' + sess.lec_num);
-            pull(sess.like, sess.subject + ':' + sess.lec_num);
-            sess.sublike = req.body.like_value;
-            sess.subdislike = req.body.dislike_value;
-            user_details_model.findOneAndUpdate({ "username": sess.username }, { $set: { "like": sess.like, "dislike": sess.dislike } }, { new: true }, function(err, data) {
-                console.log(data);
-            })
-            subjectlist_model.findOneAndUpdate({ "branch": sess.branch, "subject": sess.subject, "lec_num": sess.lec_num }, { $set: { "sublike": req.body.like_value, "subdislike": req.body.dislike_value } }, { new: true }, function(err, data) {
-                console.log(data);
-            })
-            res.send(JSON.stringify({ like: sess.like, dislike: sess.dislike, sublike: sess.sublike, subdislike: sess.subdislike }));
-        }
+    try {
+        if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
+            if (req.body.vote == "") {
+                pull(sess.dislike, sess.subject + ':' + sess.lec_num);
+                pull(sess.like, sess.subject + ':' + sess.lec_num);
+                sess.sublike = req.body.like_value;
+                sess.subdislike = req.body.dislike_value;
+                user_details_model.findOneAndUpdate({ "username": sess.username }, { $set: { "like": sess.like, "dislike": sess.dislike } }, { new: true }, function(err, data) {
+                    console.log(data);
+                })
+                subjectlist_model.findOneAndUpdate({ "branch": sess.branch, "subject": sess.subject, "lec_num": sess.lec_num }, { $set: { "sublike": req.body.like_value, "subdislike": req.body.dislike_value } }, { new: true }, function(err, data) {
+                    console.log(data);
+                })
+                res.send(JSON.stringify({ like: sess.like, dislike: sess.dislike, sublike: sess.sublike, subdislike: sess.subdislike }));
+            }
 
-        if (req.body.vote == "true") {
-            pull(sess.dislike, sess.subject + ':' + sess.lec_num);
-            sess.like.push(sess.subject + ':' + sess.lec_num);
-            sess.sublike = req.body.like_value;
-            sess.subdislike = req.body.dislike_value;
-            user_details_model.findOneAndUpdate({ "username": sess.username }, { $set: { "like": sess.like, "dislike": sess.dislike } }, { new: true }, function(err, data) {
-                console.log(data);
-            })
-            subjectlist_model.findOneAndUpdate({ "branch": sess.branch, "subject": sess.subject, "lec_num": sess.lec_num }, { $set: { "sublike": req.body.like_value, "subdislike": req.body.dislike_value } }, { new: true }, function(err, data) {
-                console.log(data);
-            })
-            res.send(JSON.stringify({ like: sess.like, dislike: sess.dislike, sublike: sess.sublike, subdislike: sess.subdislike }));
-        }
+            if (req.body.vote == "true") {
+                pull(sess.dislike, sess.subject + ':' + sess.lec_num);
+                sess.like.push(sess.subject + ':' + sess.lec_num);
+                sess.sublike = req.body.like_value;
+                sess.subdislike = req.body.dislike_value;
+                user_details_model.findOneAndUpdate({ "username": sess.username }, { $set: { "like": sess.like, "dislike": sess.dislike } }, { new: true }, function(err, data) {
+                    console.log(data);
+                })
+                subjectlist_model.findOneAndUpdate({ "branch": sess.branch, "subject": sess.subject, "lec_num": sess.lec_num }, { $set: { "sublike": req.body.like_value, "subdislike": req.body.dislike_value } }, { new: true }, function(err, data) {
+                    console.log(data);
+                })
+                res.send(JSON.stringify({ like: sess.like, dislike: sess.dislike, sublike: sess.sublike, subdislike: sess.subdislike }));
+            }
 
-        if (req.body.vote == "false") {
-            pull(sess.like, sess.subject + ':' + sess.lec_num);
-            sess.dislike.push(sess.subject + ':' + sess.lec_num);
-            sess.sublike = req.body.like_value;
-            sess.subdislike = req.body.dislike_value;
-            user_details_model.findOneAndUpdate({ "username": sess.username }, { $set: { "like": sess.like, "dislike": sess.dislike } }, { new: true }, function(err, data) {
-                console.log(data);
-            })
-            subjectlist_model.findOneAndUpdate({ "branch": sess.branch, "subject": sess.subject, "lec_num": sess.lec_num }, { $set: { "sublike": req.body.like_value, "subdislike": req.body.dislike_value } }, { new: true }, function(err, data) {
-                console.log(data);
-            })
-            res.send(JSON.stringify({ like: sess.like, dislike: sess.dislike, sublike: sess.sublike, subdislike: sess.subdislike }));
+            if (req.body.vote == "false") {
+                pull(sess.like, sess.subject + ':' + sess.lec_num);
+                sess.dislike.push(sess.subject + ':' + sess.lec_num);
+                sess.sublike = req.body.like_value;
+                sess.subdislike = req.body.dislike_value;
+                user_details_model.findOneAndUpdate({ "username": sess.username }, { $set: { "like": sess.like, "dislike": sess.dislike } }, { new: true }, function(err, data) {
+                    console.log(data);
+                })
+                subjectlist_model.findOneAndUpdate({ "branch": sess.branch, "subject": sess.subject, "lec_num": sess.lec_num }, { $set: { "sublike": req.body.like_value, "subdislike": req.body.dislike_value } }, { new: true }, function(err, data) {
+                    console.log(data);
+                })
+                res.send(JSON.stringify({ like: sess.like, dislike: sess.dislike, sublike: sess.sublike, subdislike: sess.subdislike }));
+            }
         }
+    } catch (error) {
+        console.log('Error in /vote route by user : ' + sess.unique_id + ' on server ' + server);
+        console.log(error);
+        var err_response_user = "__Error User__ : " + sess.unique_id;
+        var err_message = "__Error MSG__ : " + error;
+        var err_location = "__Error Location__ : vote on server " + server;
+        var err_message = err_response_user + "\r\n" + err_message + "\r\n" + err_location;
+        telegram_route_error_bot(err_message)
+        res.status(404)
     }
-
 })
 
 
