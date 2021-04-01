@@ -473,6 +473,7 @@ app.get('/player', function(req, res) {
         sess.sublike = data.sublike;
         sess.subdislike = data.subdislike;
         sess.views = data.views;
+        sess.playlist = data.playlist;
         //console.log(req.protocol+"://" + req.get("host"));
         if (sess.like.includes(sess.subject + ':' + sess.lec_num)) {
             var like_status = true;
@@ -498,11 +499,20 @@ app.post('/grimlim', urlencodedParser, function(req, res) {
             sess.views = sess.views + 1;
             console.log(data);
         })
-        var response_code = { fv: "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4" };
+        var response_code = { fv: req.protocol + "://" + req.get("host") + "/divket" };
         res.send(JSON.stringify(response_code));
     }
 })
 
+
+app.get('/divket', function(req, res) {
+    const fileStream = new_reg_bot.getFileStream(sess.playlist);
+    res.sendSeekable(fileStream, {
+        type: 'video/mp4', // e.g. 'audio/mp4'
+        length: '1585281',
+        filename: 'test.mp4' // e.g. 4287092
+    });
+})
 
 app.post('/player_comment_preload', urlencodedParser, function(req, res) {
     var sess = req.session;
