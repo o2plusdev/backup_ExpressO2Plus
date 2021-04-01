@@ -476,19 +476,36 @@ app.get('/player', function(req, res) {
         sess.views = data.views;
         sess.playlist = data.playlist;
         //console.log(req.protocol+"://" + req.get("host"));
-        if (sess.like.includes(sess.subject + ':' + sess.lec_num)) {
-            var like_status = true;
-            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
-        } else if (sess.dislike.includes(sess.subject + ':' + sess.lec_num)) {
-            var like_status = false;
-            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
-        } else {
-            var like_status = '';
-            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
-        }
+        ytpl(data.playlist).then(info => {
+            video_url = info.items[0].shortUrl;
+            video_url_name = info.items[0].title;
+            video_url_id = getVideoId(info.items[0].shortUrl).id;
+            ytdl.getInfo(video_url_id).then(info_data => {
+                vid_container = [];
+                for (var i = 0; i < info_data.formats.length; i++) {
+                    if (info_data.formats[i].hasVideo == true && info_data.formats[i].hasAudio == true) {
+                        vid_container.push(info_data.formats[i]);
+                    }
+                    if (i == info_data.formats.length - 1) {
+                        let formatv = vid_container[0];
+                        sess.videolink = formatv.url;
+                        console.log(sess);
+                    }
+                }
+                if (sess.like.includes(sess.subject + ':' + sess.lec_num)) {
+                    var like_status = true;
+                    res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+                } else if (sess.dislike.includes(sess.subject + ':' + sess.lec_num)) {
+                    var like_status = false;
+                    res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+                } else {
+                    var like_status = '';
+                    res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+                }
+            }).catch(error => { console.log(error); return error });
+        }).catch(error => { console.log(error); return error });
     })
 })
-
 
 
 app.post('/grimlim', urlencodedParser, function(req, res) {
@@ -500,21 +517,12 @@ app.post('/grimlim', urlencodedParser, function(req, res) {
             sess.views = sess.views + 1;
             console.log(data);
         })
-        var response_code = { fv: req.protocol + "://" + req.get("host") + "/divket" };
+        var response_code = { fv: sess.videolink };
         res.send(JSON.stringify(response_code));
     }
 })
 
 
-app.get('/divket', function(req, res) {
-    var sess = req.session;
-    const fileStream = new_reg_bot.getFileStream("BAACAgUAAxkBAAMNYGXpYr1edhLvt4gOn6DCB0KPEO0AAjgCAAI-FTBX78j3X__ThsUeBA");
-    res.sendSeekable(fileStream, {
-        type: 'video/mp4', // e.g. 'audio/mp4'
-        length: '1585281',
-        filename: 'stream.mp4' // e.g. 4287092
-    });
-})
 
 app.post('/player_comment_preload', urlencodedParser, function(req, res) {
     var sess = req.session;
