@@ -167,7 +167,7 @@ var subjectlist_server = new Schema({
 });
 
 
-var connect2 = mongoose.createConnection( process.env.SUBJECTLIST_DETAILS, { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
+var connect2 = mongoose.createConnection(process.env.SUBJECTLIST_DETAILS, { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
 var subjectlist_model = connect2.model('subjectlist_model', subjectlist_server);
 
 
@@ -212,22 +212,22 @@ app.post('/registration', urlencodedParser, function(req, res) {
         var sess = req.session;
         sess.browser_validity = req.useragent.source;
         if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
-            var response = { 
-                username: req.body.username, 
-                password: req.body.password, 
-                branch: req.body.branch, 
-                phonenumber: req.body.phonenumber, 
-                phoneverified: false, 
+            var response = {
+                username: req.body.username,
+                password: req.body.password,
+                branch: req.body.branch,
+                phonenumber: req.body.phonenumber,
+                phoneverified: false,
                 unique_id: sess.unique_id,
-                logincount: 0,  
-                video_watch_hour: 0,  
-                points: 0, 
-                rank: 0, 
+                logincount: 0,
+                video_watch_hour: 0,
+                points: 0,
+                rank: 0,
                 token_coins: 100,
-                like: [], 
-                dislike: [], 
+                like: [],
+                dislike: [],
                 userblocked: true,
-                block_reason: "Nil" 
+                block_reason: "Nil"
             };
             user_details_model.create(response, function(err, result) {
                 if (err) {
@@ -410,15 +410,15 @@ async function updatevalue(search_value, newupdatevalue) {
 app.get('/home', function(req, res) {
     var sess = req.session;
     if (true) {
-//username, password, branch, phonenumber, phoneverified, unique_id, logincount, video_watch_hour, points, rank, token_coins, like, dislike, userblocked, block_reason
-        var response = { 
-            username: sess.username, 
-            branch: sess.branch, 
-            phonenumber: sess.phonenumber, 
-            points: sess.points, 
-            rank: sess.rank, 
-            token_coins: sess.token_coins, 
-            userblocked: sess.userblocked 
+        //username, password, branch, phonenumber, phoneverified, unique_id, logincount, video_watch_hour, points, rank, token_coins, like, dislike, userblocked, block_reason
+        var response = {
+            username: sess.username,
+            branch: sess.branch,
+            phonenumber: sess.phonenumber,
+            points: sess.points,
+            rank: sess.rank,
+            token_coins: sess.token_coins,
+            userblocked: sess.userblocked
         };
         console.log(response)
         res.render('home.ejs', response);
@@ -463,6 +463,28 @@ app.post('/playlist_info', urlencodedParser, async function(req, res) {
     }
 })
 
+
+app.get('/player', function(req, res) {
+    var sess = req.session;
+    sess.lec_num = req.query.lec_num;
+    var response_code = { branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num };
+    subjectlist_model.findOne(response_code, { lec_name: 1, sublike: 1, subdislike: 1, views: 1, playlist: 1 }, function(err, data) {
+        if (err) { console.log(err); };
+        sess.sublike = data.sublike;
+        sess.subdislike = data.subdislike;
+        sess.views = data.views;
+        if (sess.like.includes(sess.subject + ':' + sess.lec_num)) {
+            var like_status = true;
+            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+        } else if (sess.dislike.includes(sess.subject + ':' + sess.lec_num)) {
+            var like_status = false;
+            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+        } else {
+            var like_status = '';
+            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+        }
+    })
+})
 
 
 
