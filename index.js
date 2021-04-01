@@ -473,6 +473,7 @@ app.get('/player', function(req, res) {
         sess.sublike = data.sublike;
         sess.subdislike = data.subdislike;
         sess.views = data.views;
+        console.log(req.protocol+"://" + req.get("host"));
         if (sess.like.includes(sess.subject + ':' + sess.lec_num)) {
             var like_status = true;
             res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
