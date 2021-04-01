@@ -108,7 +108,7 @@ app.use(session({
     resave: true,
     store: store,
     cookie: {
-        maxAge: 60 * 1000 // 60 seconds
+        maxAge: 3 * 60 * 60 * 1000 // 60 seconds
     }
 }));
 
