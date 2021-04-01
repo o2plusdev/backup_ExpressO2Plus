@@ -134,12 +134,11 @@ var user_details_server = new Schema({
     userblocked: Boolean,
     video_watch_hour: Number,
     logincount: Number,
-    lec_quality: String,
+    block_reason: String,
     points: Number,
     rank: Number,
     like: { type: [String], default: undefined },
     dislike: { type: [String], default: undefined },
-    block_reason: String
 }, {
     collection: 'user_details'
 });
@@ -211,7 +210,7 @@ app.post('/api/registration', urlencodedParser, function(req, res) {
         var sess = req.session;
         sess.browser_validity = req.useragent.source;
         if (sess.user_ip == req.ip && sess.browser_validity.includes(browser_version)) {
-            var response = { username: req.body.username, password: req.body.password, branch: req.body.branch, phonenumber: req.body.phonenumber, phoneverified: false, unique_id: sess.unique_id, userblocked: true, video_watch_hour: 0, lec_quality: "highest", logincount: 0, like: [], dislike: [], points: 0, rank: 0, block_reason: "Nil" };
+            var response = { username: req.body.username, password: req.body.password, branch: req.body.branch, phonenumber: req.body.phonenumber, phoneverified: false, unique_id: sess.unique_id, userblocked: true, video_watch_hour: 0, logincount: 0, like: [], dislike: [], points: 0, rank: 0, block_reason: "Nil" };
             user_details_model.create(response, function(err, result) {
                 if (err) {
                     if (err.code === 11000) {
@@ -297,11 +296,108 @@ app.get('/api/login_page', function(req, res) {
 });
 
 
+app.post('/login', urlencodedParser, function(req, res) {
+    var sess = req.session;
+    if (true) {
+        var response = { username: req.body.username, password: req.body.password, unique_id: sess.unique_id };
+        database_search({ username: req.body.username }).then(function(result) {
+            if (result) {
+                if (response.username == result.username && response.password == result.password && response.unique_id == result.unique_id) {
+                    sess.username = result.username;
+                    sess.password = result.password;
+                    sess.branch = result.branch;
+                    sess.phonenumber = result.phonenumber;
+                    sess.phoneverified = result.phoneverified;
+                    sess.unique_id = result.unique_id
+                    sess.userblocked = result.userblocked;
+                    sess.video_watch_hour = result.video_watch_hour;
+                    sess.logincount = result.logincount;
+                    sess.like = result.like;
+                    sess.dislike = result.dislike;
+                    sess.lec_quality = result.lec_quality;
+                    sess.points = result.points;
+                    sess.rank = result.rank;
+                    if (sess.userblocked == true) {
+                        var response_result = { form_ver: 'valid pswd', form_redirect: 'first_time_registration' };
+                        res.end(JSON.stringify(response_result));
+                    } else {
+                        sess.logincount = sess.logincount + 1;
+                        user_details_model.aggregate([{ $match: { points: { $gte: sess.points } } }, { $count: "user_ranking" }]).exec(function(err, result) {
+                            sess.rank = result[0].user_ranking;
+                            updatevalue({ username: sess.username, unique_id: sess.unique_id }, { logincount: sess.logincount, rank: result[0].user_ranking });
+                            user_details_model.count({}, function(err, count) {
+                                sess.total_users = count;
+                                var response_result = { form_ver: 'valid pswd', form_redirect: 'home' };
+                                res.end(JSON.stringify(response_result));
+                            })
+                        })
+                    }
+                } else if (response.username == result.username && response.password == result.password && response.unique_id != result.unique_id) {
+                    var response_result = { form_ver: 'dup device', form_redirect: '' };
+                    res.end(JSON.stringify(response_result));
+                } else {
+                    var response_result = { form_ver: 'invalid pswd', form_redirect: '' };
+                    res.end(JSON.stringify(response_result));
+                }
+            } else {
+                var response_result = { form_ver: 'invalid user', form_redirect: '' };
+                res.end(JSON.stringify(response_result));
+            }
+        });
+    } else {
+        var response_result = { form_ver: 'invalid user', form_redirect: '' };
+        res.end(JSON.stringify(response_result));
+    }
+})
 
 
+async function database_search(search_parameters) {
+    let promise = new Promise((resolve, reject) => {
+        user_details_model.find(search_parameters, function(err, result) {
+            if (err) {
+                console.log(err);
+                resolve(null);
+                res.end('failed');
+            } else {
+                resolve(result[0]);
+            }
+        })
+    }).catch(error => {
+        resolve(null);
+        console.log(error)
+    })
+    let resultfinal = await promise;
+    return resultfinal; // "done!"
+}
 
+async function updatevalue(search_value, newupdatevalue) {
+    let promise = new Promise((resolve, reject) => {
+        user_details_model.findOneAndUpdate(search_value, { $set: newupdatevalue }, { new: true }, (err, doc) => {
+            if (err) {
+                console.log("Something wrong when updating data!");
+                resolve('fail');
+            }
+            console.log(doc);
+            resolve('success');
+        });
+    }).catch(error => {
+        resolve('fail');
+        console.log(error)
+    })
+    let resultfinal = await promise;
+    return resultfinal;
+}
 
-
+app.get('/api/home', function(req, res) {
+    var sess = req.session;
+    if (true) {
+        var response = { username: sess.username, phonenumber: sess.phonenumber, phonestate: sess.phoneverified, userblocked: sess.userblocked, branch: sess.branch, rank: sess.rank, points: sess.points, token_coins: sess.token_coins, total_users: sess.total_users };
+        console.log(response)
+        res.render('home.ejs', response);
+    } else {
+        res.render("error.ejs");
+    }
+});
 
 
 
