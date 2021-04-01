@@ -58,6 +58,17 @@ app.use(
     })
 );
 
+app.use(function(req, res, next) {
+  var url_schema = req.headers['x-forwarded-proto'];
+
+  if (url_schema === 'https') {
+    next();
+  }
+  else {
+    res.redirect('https://' + req.headers.host + req.url);
+  }
+});
+
 // redirect to any url except the present one
 
 var template = '<script type="text/javascript"> window.location.href="about:blank"; </script>';
@@ -171,7 +182,9 @@ var subjectlist_server = new Schema({
 var connect2 = mongoose.createConnection(process.env.SUBJECTLIST_DETAILS, { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
 var subjectlist_model = connect2.model('subjectlist_model', subjectlist_server);
 
-
+app.get('*', function(req, res){
+  res.send('about:blank', 404);
+});
 
 app.get('/registration_page', function(req, res) {
     var sess = req.session;
