@@ -411,7 +411,15 @@ app.get('/api/home', function(req, res) {
     var sess = req.session;
     if (true) {
 //username, password, branch, phonenumber, phoneverified, unique_id, logincount, video_watch_hour, points, rank, token_coins, like, dislike, userblocked, block_reason
-        var response = { username: sess.username, branch: sess.branch, phonenumber: sess.phonenumber, points: sess.points, rank: sess.rank, token_coins: sess.token_coins, userblocked: sess.userblocked };
+        var response = { 
+            username: sess.username, 
+            branch: sess.branch, 
+            phonenumber: sess.phonenumber, 
+            points: sess.points, 
+            rank: sess.rank, 
+            token_coins: sess.token_coins, 
+            userblocked: sess.userblocked 
+        };
         console.log(response)
         res.render('home.ejs', response);
     } else {

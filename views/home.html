@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="css/bootstrap.min.css" id="bootstrap-css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet" type="text/css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap" rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <style type="text/css">
+    body {
+        background: rgba(36, 36, 36);
+    }
+
+    .main {
+        display: flex;
+        flex-direction: column;
+        font-family: "Poppins", sans-serif;
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+
+
+    .menu {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        height: 420px;
+        position: relative;
+        justify-content: center;
+    }
+
+    .menu__item {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        width: 140px;
+        height: 140px;
+        cursor: pointer;
+        background: transparent;
+        color: white;
+        z-index: 100;
+        transition: 150ms;
+    }
+
+    .menu__item:hover .menu__icon {
+        animation: icon 0.1s 4;
+    }
+
+    .menu__item:hover .menu__span {
+        transform: translateY(-17px);
+        transition: 300ms;
+    }
+
+    .menu__icon {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+        margin: 2px;
+    }
+
+    .menu__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        position: relative;
+        width: 100%;
+        height: 18px;
+        overflow: hidden;
+    }
+
+    @keyframes icon {
+        0% {
+            transform: rotateZ(-10deg);
+        }
+
+        100% {
+            transform: rotateZ(10deg);
+        }
+    }
+    </style>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-light" id="web_header" style="background-color: rgba(36, 36, 36); border-bottom-color: #ea2c5a; border-bottom-width: 2px; border-bottom-style: solid; padding: .05rem 1rem;">
+        <a class="navbar-brand" href="#" style="color: white; font-size: 25px; font-family: 'Courier New', monospace; color: #50ace4; "><img height="30px" src="logo.png" width="35px" style="margin-right: 10px; margin-top: -4px;">Plus</a>
+        <button aria-controls="navbars" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarContent" data-toggle="collapse" onclick="menu_button()" style="outline: none; border: none;" type="button"><img height="30px" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGlk%0D%0APSJzdmdfMSIgZmlsbD0ibm9uZSIgZD0ibTAsMGw0OCwwbDAsNDhsLTQ4LDBsMCwtNDh6Ii8+CiAg%0D%0APHBhdGggZmlsbD0iI2ZmZmZmZiIgaWQ9InN2Z18yIiBkPSJtMjQsMTZjMi4yMSwwIDQsLTEuNzkg%0D%0ANCwtNHMtMS43OSwtNCAtNCwtNHMtNCwxLjc5IC00LDRzMS43OSw0IDQsNHptMCw0Yy0yLjIxLDAg%0D%0ALTQsMS43OSAtNCw0czEuNzksNCA0LDRzNCwtMS43OSA0LC00cy0xLjc5LC00IC00LC00em0wLDEy%0D%0AYy0yLjIxLDAgLTQsMS43OSAtNCw0czEuNzksNCA0LDRzNCwtMS43OSA0LC00cy0xLjc5LC00IC00%0D%0ALC00eiIvPgogPC9nPgo8L3N2Zz4=" width="30px"></button>
+    </nav>
+    <div id="web_container">
+        <div class="container vh-100 d-flex align-items-center col justify-content-center" style="width:100%; position: relative;">
+            <table style="width: 100%; text-align: center;">
+                <tr>
+                    <td>
+                        <p style="column-width: 150px; font-size: 17px; padding-top: 5px; text-align: left; font-style: bold; color: #ea2c5a">Username</p>
+                    </td>
+                    <td><input style="column-width: 150px; font-size: 17px; text-align: center;" disabled="disabled" id="usernamebox"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="column-width: 150px; font-size: 17px; padding-top: 5px;text-align: left; font-style: bold; color: #ea2c5a">Branch</p>
+                    </td>
+                    <td><input style="column-width: 150px; font-size: 17px; text-align: center;" disabled="disabled" id="branchbox">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="column-width: 150px; font-size: 17px; padding-top: 5px;text-align: left; font-style: bold; color: #ea2c5a">Phone Number</p>
+                    </td>
+                    <td><input style="column-width: 150px; font-size: 17px; text-align: center;" disabled="disabled" id="phonebox">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="column-width: 150px; font-size: 17px; padding-top: 5px;text-align: left; font-style: bold; color: #ea2c5a">Points</p>
+                    </td>
+                    <td><input style="column-width: 150px; font-size: 17px; text-align: center;" disabled="disabled" id="pointsbox">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="column-width: 150px; font-size: 17px; padding-top: 5px;text-align: left; font-style: bold; color: #ea2c5a">Rank</p>
+                    </td>
+                    <td><input style="column-width: 150px; font-size: 17px; text-align: center;" disabled="disabled" id="rankbox">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="column-width: 150px; font-size: 17px; padding-top: 5px;text-align: left; font-style: bold; color: #ea2c5a">Token Coins</p>
+                    </td>
+                    <td><input style="column-width: 150px; font-size: 17px; text-align: center;" disabled="disabled" id="tokenbox">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="column-width: 150px; font-size: 17px; padding-top: 5px;text-align: left; font-style: bold; color: #ea2c5a">Application Status</p>
+                    </td>
+                    <td><input style="column-width: 150px; font-size: 17px; text-align: center;" disabled="disabled" id="statusbox">
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div id="menu_container" style="width: 100%; height: 100%; z-index: 5000; position: absolute; display: none; top: 0px">
+        <div class="main" id="menu_list">
+            <div class="menu" style="margin-top: 0px; margin-bottom: 0px;">
+                <div class="menu__item" id="0-0" onclick="menu_redirect('home')">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGZp%0D%0AbGw9IiNmZmZmZmYiIGlkPSJzdmdfMSIgZD0ibTIwLDQwbDAsLTEybDgsMGwwLDEybDEwLDBsMCwt%0D%0AMTZsNiwwbC0yMCwtMThsLTIwLDE4bDYsMGwwLDE2bDEwLDB6Ii8+CiA8L2c+Cjwvc3ZnPg==">
+                    <div class="menu__content">
+                        <span class="menu__span">HOME</span><span class="menu__span">HOME</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="1-0" onclick="menu_redirect('stats')" style="display: none">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGlk%0D%0APSJzdmdfMSIgZmlsbD0ibm9uZSIgZD0ibTAsMGw0OCwwbDAsNDhsLTQ4LDBsMCwtNDh6Ii8+CiAg%0D%0APHBhdGggZmlsbD0iI2ZmZmZmZiIgaWQ9InN2Z18yIiBkPSJtMjAsNDBsOCwwbDAsLTMybC04LDBs%0D%0AMCwzMnptLTEyLDBsOCwwbDAsLTE2bC04LDBsMCwxNnptMjQsLTIybDAsMjJsOCwwbDAsLTIybC04%0D%0ALDB6Ii8+CiA8L2c+Cjwvc3ZnPg==">
+                    <div class="menu__content">
+                        <span class="menu__span">STATS</span><span class="menu__span">STATS</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="0-1" onclick="menu_redirect('lecture')">
+                    <img class="menu__icon" src="lecture.png">
+                    <div class="menu__content">
+                        <span class="menu__span">LECTURES</span><span class="menu__span">LECTURES</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="1-1" onclick="menu_redirect('likes')" style="display: none">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGlk%0D%0APSJzdmdfMSIgZmlsbD0ibm9uZSIgZD0ibTAsMGw0OCwwbDAsNDhsLTQ4LDBsMCwtNDh6Ii8+CiAg%0D%0APHBhdGggZmlsbD0iI2ZmZmZmZiIgaWQ9InN2Z18yIiBkPSJtMjQsNDIuN2wtMi45LC0yLjYzYy0x%0D%0AMC4zLC05LjM1IC0xNy4xLC0xNS41MiAtMTcuMSwtMjMuMDdjMCwtNi4xNyA0LjgzLC0xMSAxMSwt%0D%0AMTFjMy40OCwwIDYuODIsMS42MiA5LDQuMTdjMi4xOCwtMi41NSA1LjUyLC00LjE3IDksLTQuMTdj%0D%0ANi4xNywwIDExLDQuODMgMTEsMTFjMCw3LjU1IC02LjgsMTMuNzIgLTE3LjEsMjMuMDdsLTIuOSwy%0D%0ALjYzeiIvPgogPC9nPgo8L3N2Zz4=">
+                    <div class="menu__content">
+                        <span class="menu__span">LIKES</span><span class="menu__span">LIKES</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="0-2" onclick="menu_redirect('qna')" style="display: none">
+                    <img class="menu__icon" src="qna.png">
+                    <div class="menu__content">
+                        <span class="menu__span">QnA</span><span class="menu__span">QnA</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="1-2" onclick="menu_redirect('chats')" style="display: none">
+                    <img class="menu__icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAw%0D%0AL3N2ZyI+CgogPGc+CiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPgogIDxyZWN0IGZpbGw9Im5v%0D%0AbmUiIGlkPSJjYW52YXNfYmFja2dyb3VuZCIgaGVpZ2h0PSI0MDIiIHdpZHRoPSI1ODIiIHk9Ii0x%0D%0AIiB4PSItMSIvPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxwYXRoIGZp%0D%0AbGw9IiNmZmZmZmYiIGlkPSJzdmdfMSIgZD0ibTQuMDIsNDJsNDEuOTgsLTE4bC00MS45OCwtMThs%0D%0ALTAuMDIsMTRsMzAsNGwtMzAsNGwwLjAyLDE0eiIvPgogPC9nPgo8L3N2Zz4=">
+                    <div class="menu__content">
+                        <span class="menu__span">CHATS</span><span class="menu__span">CHATS</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="2-2" onclick="menu_redirect('materials')" style="display: none">
+                    <img class="menu__icon" src="study_materials.png">
+                    <div class="menu__content">
+                        <span class="menu__span">MATERIALS</span><span class="menu__span">MATERIALS</span>
+                    </div>
+                </div>
+                <div class="menu__item" id="0-3">
+                    <img class="menu__icon" onclick="menu_back()" src="close.png" style="padding: 3px;">
+                    <div class="menu__content">
+                        <span class="menu__span">CLOSE</span><span class="menu__span">CLOSE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    function menu_button() {
+        $("#web_header").fadeToggle(300);
+        $("#web_container").fadeToggle(300);
+        $("#menu_container").delay(400).fadeToggle(300);
+    }
+
+    function menu_back() {
+        $("#web_header").delay(400).fadeToggle(300);
+        $("#web_container").delay(400).fadeToggle(300);
+        $("#menu_container").fadeToggle(300);
+    }
+
+    function menu_redirect(redirect_id) {
+        var base_url = window.location.origin;
+        window.location.replace(base_url + "/" + redirect_id);
+    }
+
+    window.addEventListener('load', (event) => {
+        $("#usernamebox").val('<%= username %>');
+        //$("#branchbox").val('<%= branch %>');
+        var branchval = '<%= branch %>'
+        if (branchval == "ce") {
+            $("#branchbox").val("Civil Engg");
+        } else if (branchval == "ch") {
+            $("#branchbox").val("Chemical Engg");
+        } else if (branchval == "cs") {
+            $("#branchbox").val("Computer Engg");
+        } else if (branchval == "ec") {
+            $("#branchbox").val("Electronics Engg");
+        } else if (branchval == "ee") {
+            $("#branchbox").val("Electrical Engg");
+        } else if (branchval == "in") {
+            $("#branchbox").val("Instrumentation Engg");
+        } else if (branchval == "me") {
+            $("#branchbox").val("Mechanical Engg");
+        }
+        $("#phonebox").val('<%= phonenumber %>');
+        $("#pointsbox").val('<%= pointsbox %>');
+        $("#rankbox").val('<%= rankbox %>');
+        $("#tokenbox").val('<%= tokenbox %>');
+        $("#statusbox").val('<%= statusbox %>');
+    })
+    </script>
+    </body>
+
+</html>
