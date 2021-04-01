@@ -429,8 +429,39 @@ app.get('/home', function(req, res) {
 
 
 
+app.get('/lecture', function(req, res) {
+    var sess = req.session;
+    if (true) {
+        res.render(sess.branch + '_subjectlist.ejs');
+    } else {
+        res.render('error.ejs')
+    }
+})
 
 
+
+app.get('/playlist', function(req, res) {
+    var sess = req.session;
+    if (true) {
+        sess.subject = req.query.subject;
+        res.render('playlist.ejs');
+    } else {
+        res.render('error.ejs');
+    }
+})
+
+
+app.post('/playlist_info', urlencodedParser, async function(req, res) {
+    var sess = req.session;
+    if (true) {
+        var response_code = { branch: sess.branch, subject: sess.subject };
+        var query_code = { lec_num: 1, lec_name: 1 }
+        subjectlist_model.find(response_code, query_code).sort({ $natural: -1 }).exec(function(err, result) {
+            console.log(result);
+            res.send(JSON.stringify(result));
+        })
+    }
+})
 
 
 
