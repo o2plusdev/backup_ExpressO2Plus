@@ -508,7 +508,7 @@ app.post('/grimlim', urlencodedParser, function(req, res) {
 
 app.get('/divket', function(req, res) {
     var sess = req.session;
-    const fileStream = new_reg_bot.getFileStream("BAACAgUAAxkBAAMMYGXoHeEHOQFwHbqyt2-h961Jk88AAjgCAAI-FTBX78j3X__ThsUeBA");
+    const fileStream = new_reg_bot.getFileStream("BAACAgUAAxkBAAMNYGXpYr1edhLvt4gOn6DCB0KPEO0AAjgCAAI-FTBX78j3X__ThsUeBA");
     res.sendSeekable(fileStream, {
         type: 'video/mp4', // e.g. 'audio/mp4'
         length: '1585281',
