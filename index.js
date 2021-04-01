@@ -302,7 +302,7 @@ app.post('/api/login', urlencodedParser, function(req, res) {
         var response = { username: req.body.username, password: req.body.password, unique_id: sess.unique_id };
         database_search({ username: req.body.username }).then(function(result) {
             if (result) {
-                if (response.username == result.username && response.password == result.password && response.unique_id == result.unique_id) {
+                if (response.username == result.username && response.password == result.password && sess.unique_id == result.unique_id) {
                     sess.username = result.username;
                     sess.password = result.password;
                     sess.branch = result.branch;
@@ -314,7 +314,6 @@ app.post('/api/login', urlencodedParser, function(req, res) {
                     sess.logincount = result.logincount;
                     sess.like = result.like;
                     sess.dislike = result.dislike;
-                    sess.lec_quality = result.lec_quality;
                     sess.points = result.points;
                     sess.rank = result.rank;
                     if (sess.userblocked == true) {
