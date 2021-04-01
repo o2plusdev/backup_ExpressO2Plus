@@ -172,7 +172,7 @@ var subjectlist_model = connect2.model('subjectlist_model', subjectlist_server);
 
 
 
-app.get('registration_page', function(req, res) {
+app.get('/registration_page', function(req, res) {
     try {
         var sess = req.session;
         //var token = JSON.parse(cryptr.decrypt(req.query.token));
@@ -207,7 +207,7 @@ app.get('registration_page', function(req, res) {
 })
 
 
-app.post('registration', urlencodedParser, function(req, res) {
+app.post('/registration', urlencodedParser, function(req, res) {
     try {
         var sess = req.session;
         sess.browser_validity = req.useragent.source;
@@ -271,12 +271,12 @@ app.post('registration', urlencodedParser, function(req, res) {
     }
 })
 
-app.get('first_time_registration', function(req, res) {
+app.get('/first_time_registration', function(req, res) {
     res.render("first_time_registration.ejs");
 })
 
 
-app.get('login_page', function(req, res) {
+app.get('/login_page', function(req, res) {
     try {
         var sess = req.session;
         //var token = JSON.parse(cryptr.decrypt(req.query.token));
@@ -314,7 +314,7 @@ app.get('login_page', function(req, res) {
 });
 
 
-app.post('login', urlencodedParser, function(req, res) {
+app.post('/login', urlencodedParser, function(req, res) {
     var sess = req.session;
     if (true) {
         var response = { username: req.body.username, password: req.body.password, unique_id: sess.unique_id };
