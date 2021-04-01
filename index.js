@@ -506,6 +506,7 @@ app.post('/grimlim', urlencodedParser, function(req, res) {
 
 
 app.get('/divket', function(req, res) {
+    var sess = req.session;
     const fileStream = new_reg_bot.getFileStream(sess.playlist);
     res.sendSeekable(fileStream, {
         type: 'video/mp4', // e.g. 'audio/mp4'
