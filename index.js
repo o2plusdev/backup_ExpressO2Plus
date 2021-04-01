@@ -296,7 +296,7 @@ app.get('/api/login_page', function(req, res) {
 });
 
 
-app.post('/login', urlencodedParser, function(req, res) {
+app.post('/api/login', urlencodedParser, function(req, res) {
     var sess = req.session;
     if (true) {
         var response = { username: req.body.username, password: req.body.password, unique_id: sess.unique_id };
