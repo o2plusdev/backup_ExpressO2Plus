@@ -473,7 +473,7 @@ app.get('/player', function(req, res) {
         sess.sublike = data.sublike;
         sess.subdislike = data.subdislike;
         sess.views = data.views;
-        console.log(req.protocol+"://" + req.get("host"));
+        //console.log(req.protocol+"://" + req.get("host"));
         if (sess.like.includes(sess.subject + ':' + sess.lec_num)) {
             var like_status = true;
             res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
@@ -487,6 +487,109 @@ app.get('/player', function(req, res) {
     })
 })
 
+
+
+app.post('/grimlim', urlencodedParser, function(req, res) {
+    var sess = req.session;
+    if (true) {
+        var response_code = { branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num };
+        subjectlist_model.findOneAndUpdate(response_code, { $set: { "views": sess.views + 1 } }, { new: true }, function(err, data) {
+            if (err) { console.log(err); }
+            sess.views = sess.views + 1;
+            console.log(data);
+        })
+        var response_code = { fv: "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4" };
+        res.send(JSON.stringify(response_code));
+    }
+})
+
+
+app.post('/player_comment_preload', urlencodedParser, function(req, res) {
+    var sess = req.session;
+    if (true) {
+        var response_code = { branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num };
+        subjectlist_model.findOne(response_code, { comments: 1 }, function(err, data) {
+            if (err) {
+                console.log(err);
+            } else {
+                var data_temp = data.comments;
+                res.send(JSON.stringify(data_temp));
+            }
+        })
+    }
+})
+
+app.post('/player_comment', urlencodedParser, function(req, res) {
+    var sess = req.session;
+    if (true) {
+        var response_code = { branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num };
+        var comment_temp = { commentor: sess.username, rank: sess.rank, commentor_msg: req.body.comment_msg };
+        subjectlist_model.findOne(response_code, { comments: 1 }, function(err, data) {
+            var data_temp = data.comments;
+            if (data_temp.length < 50) {
+                data_temp.push(comment_temp);
+            } else {
+                data_temp.pop(comment_temp);
+                data_temp.push(comment_temp);
+            }
+            subjectlist_model.findOneAndUpdate(response_code, { $set: { comments: data_temp } }, { new: true }, function(err, data) {
+                res.send(JSON.stringify(comment_temp));
+            })
+        })
+    }
+})
+
+
+
+
+
+app.post('/vote', urlencodedParser, function(req, res) {
+    var sess = req.session;
+    if (true) {
+        if (req.body.vote == "") {
+            pull(sess.dislike, sess.subject + ':' + sess.lec_num);
+            pull(sess.like, sess.subject + ':' + sess.lec_num);
+            sess.sublike = req.body.like_value;
+            sess.subdislike = req.body.dislike_value;
+            user_details_model.findOneAndUpdate({ "username": sess.username }, { $set: { "like": sess.like, "dislike": sess.dislike } }, { new: true }, function(err, data) {
+                console.log(data);
+            })
+            subjectlist_model.findOneAndUpdate({ "branch": sess.branch, "subject": sess.subject, "lec_num": sess.lec_num }, { $set: { "sublike": req.body.like_value, "subdislike": req.body.dislike_value } }, { new: true }, function(err, data) {
+                console.log(data);
+            })
+            res.send(JSON.stringify({ like: sess.like, dislike: sess.dislike, sublike: sess.sublike, subdislike: sess.subdislike }));
+        }
+
+        if (req.body.vote == "true") {
+            pull(sess.dislike, sess.subject + ':' + sess.lec_num);
+            sess.like.push(sess.subject + ':' + sess.lec_num);
+            sess.sublike = req.body.like_value;
+            sess.subdislike = req.body.dislike_value;
+            user_details_model.findOneAndUpdate({ "username": sess.username }, { $set: { "like": sess.like, "dislike": sess.dislike } }, { new: true }, function(err, data) {
+                console.log(data);
+            })
+            subjectlist_model.findOneAndUpdate({ "branch": sess.branch, "subject": sess.subject, "lec_num": sess.lec_num }, { $set: { "sublike": req.body.like_value, "subdislike": req.body.dislike_value } }, { new: true }, function(err, data) {
+                console.log(data);
+            })
+            res.send(JSON.stringify({ like: sess.like, dislike: sess.dislike, sublike: sess.sublike, subdislike: sess.subdislike }));
+        }
+
+        if (req.body.vote == "false") {
+            pull(sess.like, sess.subject + ':' + sess.lec_num);
+            sess.dislike.push(sess.subject + ':' + sess.lec_num);
+            sess.sublike = req.body.like_value;
+            sess.subdislike = req.body.dislike_value;
+            user_details_model.findOneAndUpdate({ "username": sess.username }, { $set: { "like": sess.like, "dislike": sess.dislike } }, { new: true }, function(err, data) {
+                console.log(data);
+            })
+            subjectlist_model.findOneAndUpdate({ "branch": sess.branch, "subject": sess.subject, "lec_num": sess.lec_num }, { $set: { "sublike": req.body.like_value, "subdislike": req.body.dislike_value } }, { new: true }, function(err, data) {
+                console.log(data);
+            })
+            res.send(JSON.stringify({ like: sess.like, dislike: sess.dislike, sublike: sess.sublike, subdislike: sess.subdislike }));
+        }
+    }
+
+})
 
 
 
