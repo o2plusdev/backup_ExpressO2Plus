@@ -619,6 +619,7 @@ app.post('/grimlim', urlencodedParser, function(req, res) {
 })
 
 app.get('/stream', function(req, res) {
+    var sess = req.session;
     ytdl.getInfo(sess.video_url_id).then(info_data => {
         vid_container = [];
         for (var i = 0; i < info_data.formats.length; i++) {
