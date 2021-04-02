@@ -618,6 +618,9 @@ app.post('/grimlim', urlencodedParser, function(req, res) {
     }
 })
 
+
+const got = require('got');
+
 app.get('/stream', function(req, res) {
     var sess = req.session;
     console.log(sess.video_url_id);
@@ -631,18 +634,19 @@ app.get('/stream', function(req, res) {
                 if (i == info_data.formats.length - 1) {
                     let formatv = vid_container[0];
                     console.log(formatv.url)
-                    https.get(formatv.url, function(err, response) {
-                        console.log(err);
-                        if (!err) {
-                            res.sendSeekable(response, {
-                                connection: 'keep-alive',
-                                "cache-control": "no-cache",
-                                type: 'video/mp4', // e.g. 'audio/mp4'
-                                length: formatv.contentLength,
-                                filename: 'stream.mp4' // e.g. 4287092
-                            });
-                        }
-                    });
+                    got.stream(formatv.url).pipe(res);
+                    //https.get(formatv.url, function(err, response) {
+                    //    console.log(err);
+                    //    if (!err) {
+                    //        res.sendSeekable(response, {
+                    //            connection: 'keep-alive',
+                    //            "cache-control": "no-cache",
+                    //            type: 'video/mp4', // e.g. 'audio/mp4'
+                    //            length: formatv.contentLength,
+                    //            filename: 'stream.mp4' // e.g. 4287092
+                    //        });
+                    //    }
+                    //});
                 }
             }
         }).catch(error => {
