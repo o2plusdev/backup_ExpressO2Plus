@@ -642,6 +642,8 @@ app.get('/stream', function(req, res) {
 
                 }
             }
+        }).catch(error => {
+            console.log(error)
         })
     } catch (error) {
         console.log(error)
