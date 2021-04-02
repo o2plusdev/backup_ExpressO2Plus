@@ -634,7 +634,14 @@ app.get('/stream', function(req, res) {
                 if (i == info_data.formats.length - 1) {
                     let formatv = vid_container[0];
                     console.log(formatv.url)
-                    got.stream(formatv.url).pipe(res);
+                    var filestream = got.stream(formatv.url);
+                    res.sendSeekable(filestream, {
+                        connection: 'keep-alive',
+                        "cache-control": "no-cache",
+                        type: 'video/mp4', // e.g. 'audio/mp4'
+                        length: formatv.contentLength,
+                        filename: 'stream.mp4' // e.g. 4287092
+                    });
                     //https.get(formatv.url, function(err, response) {
                     //    console.log(err);
                     //    if (!err) {
