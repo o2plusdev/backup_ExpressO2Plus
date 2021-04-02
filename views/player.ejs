@@ -438,8 +438,7 @@
     const words1 = subject.split("_");
     $("#subject").text(string_cap(words1));
     var lec_name = '<%= lec_name %>';
-    const words2 = lec_name.split(" ");
-    $("#lec_name_container").text("Lecture - " + '<%= lec_num%> ' + words2);
+    $("#lec_name_container").text("Lecture - " + lec_name);
 
     function string_cap(words) {
         for (let i = 0; i < words.length; i++) {

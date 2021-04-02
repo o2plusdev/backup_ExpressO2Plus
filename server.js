@@ -175,29 +175,26 @@ var subjectlist_server = new Schema({
 var connect2 = mongoose.createConnection(process.env.SUBJECTLIST_DETAILS, { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
 var subjectlist_model = connect2.model('subjectlist_model', subjectlist_server);
 
-//ytpl("PLljuNwoG27OJgUKvLUeFB9tOlS2ZpmVUR").then(info => {
-//	var length = info.items.length;
-//	var i = 0;
-//	for (i=0; i < 40; i++){
-//		var response ={
-//			branch : [ 'ce', 'ch', 'cs', 'ec', 'ee' ,'in' , 'me'],
-//			subject : "mathematics",
-//			playlist : "PLljuNwoG27OJgUKvLUeFB9tOlS2ZpmVUR",
-//			lec_num: i+1,
-//			lec_name: info.items[i].title,
-//			lec_time: info.items[i].duration,
-//			sublike: 0,
-//			subdislike: 0,
-//			views: 0,
-//			comments: [{}],
-//		}
-//		subjectlist_model.create(response, function(err, result) {
-//			console.log(i);
-//		})
-//	} 
-//})
-
-
-subjectlist_model.find({branch : "ec"}, function(err, result){
-	console.log(result);
+ytpl("PLljuNwoG27OJgUKvLUeFB9tOlS2ZpmVUR").then(info => {
+	var length = info.items.length;
+	var i = 0;
+	for (i=0; i < 40; i++){
+		var response ={
+			branch : [ 'ce', 'ch', 'cs', 'ec', 'ee' ,'in' , 'me'],
+			subject : "mathematics",
+			playlist : "PLljuNwoG27OJgUKvLUeFB9tOlS2ZpmVUR",
+			lec_num: i+1,
+			lec_name: info.items[i].title,
+			lec_time: info.items[i].duration,
+			sublike: 0,
+			subdislike: 0,
+			views: 0,
+			comments: [],
+		}
+		subjectlist_model.create(response, function(err, result) {
+			console.log(i);
+		})
+	} 
 })
+
+
