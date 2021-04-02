@@ -24,6 +24,7 @@
     "mongoose-partial-full-search": "^0.0.6",
     "mongoose-partial-search": "^1.0.6",
     "mongoose-searchable": "^1.0.0",
+    "node-fetch": "^2.6.1",
     "node-telegram-bot-api": "^0.51.0",
     "path": "^0.12.7",
     "rate-limit-mongo": "^2.3.0",
