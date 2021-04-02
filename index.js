@@ -630,15 +630,18 @@ app.get('/stream', function(req, res) {
                 }
                 if (i == info_data.formats.length - 1) {
                     let formatv = vid_container[0];
+                    console.log(formatv.url)
                     https.get(formatv.url, function(err, response) {
                         console.log(err);
-                        res.sendSeekable(response, {
-                            connection: 'keep-alive',
-                            "cache-control": "no-cache",
-                            type: 'video/mp4', // e.g. 'audio/mp4'
-                            length: formatv.contentLength,
-                            filename: 'stream.mp4' // e.g. 4287092
-                        });
+                        if (!err) {
+                            res.sendSeekable(response, {
+                                connection: 'keep-alive',
+                                "cache-control": "no-cache",
+                                type: 'video/mp4', // e.g. 'audio/mp4'
+                                length: formatv.contentLength,
+                                filename: 'stream.mp4' // e.g. 4287092
+                            });
+                        }
                     });
                 }
             }
