@@ -631,7 +631,7 @@ app.get('/stream', function(req, res) {
                 if (i == info_data.formats.length - 1) {
                     let formatv = vid_container[0];
                     console.log(formatv.url)
-                    request.get(formatv.url, function(err, response) {
+                    https.get(formatv.url, function(err, response) {
                         console.log(err);
                         if (!err) {
                             res.sendSeekable(response, {
