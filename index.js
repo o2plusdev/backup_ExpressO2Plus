@@ -19,7 +19,6 @@ var ytpl = require('ytpl');
 const getVideoId = require('get-video-id');
 var MongoDBStore = require('connect-mongodb-session')(session);
 var useragent = require('express-useragent');
-const TelegramBot = require('node-telegram-bot-api');
 const rateLimit = require("express-rate-limit");
 var MongoStore = require('rate-limit-mongo');
 const Cryptr = require('cryptr');
@@ -37,12 +36,6 @@ var test_token = '4728728fcf5fbef60cfca6646d77fe9aaf04d87ca17c1894d4cc433737eaf4
 
 
 const error_token = cryptr.decrypt(process.env.ERROR_TOKEN);
-const new_reg_token = cryptr.decrypt(process.env.NEWREG_TOKEN);
-var telegram_admin = cryptr.decrypt(process.env.TELEGRAM_ADMIN);
-
-
-const error_bot = new TelegramBot(error_token, { polling: true });
-const new_reg_bot = new TelegramBot(new_reg_token, { polling: true });
 
 
 
@@ -59,14 +52,13 @@ app.use(
 );
 
 app.use(function(req, res, next) {
-  var url_schema = req.headers['x-forwarded-proto'];
+    var url_schema = req.headers['x-forwarded-proto'];
 
-  if (url_schema === 'https') {
-    next();
-  }
-  else {
-    res.redirect('https://' + req.headers.host + req.url);
-  }
+    if (url_schema === 'https') {
+        next();
+    } else {
+        res.redirect('https://' + req.headers.host + req.url);
+    }
 });
 
 // redirect to any url except the present one
@@ -151,7 +143,8 @@ var user_details_server = new Schema({
     like: { type: [String], default: undefined },
     dislike: { type: [String], default: undefined },
     userblocked: Boolean,
-    block_reason: String
+    block_reason: String,
+    server: Number
 }, {
     collection: 'user_details'
 });
@@ -238,7 +231,8 @@ app.post('/registration', urlencodedParser, function(req, res) {
                 like: [],
                 dislike: [],
                 userblocked: true,
-                block_reason: "Nil"
+                block_reason: "Nil",
+                server: 0
             };
             user_details_model.create(response, function(err, result) {
                 if (err) {
@@ -547,29 +541,40 @@ app.get('/player', function(req, res) {
                     video_url = info.items[0].shortUrl;
                     video_url_name = info.items[0].title;
                     video_url_id = getVideoId(info.items[0].shortUrl).id;
-                    ytdl.getInfo(video_url_id).then(info_data => {
-                        vid_container = [];
-                        for (var i = 0; i < info_data.formats.length; i++) {
-                            if (info_data.formats[i].hasVideo == true && info_data.formats[i].hasAudio == true) {
-                                vid_container.push(info_data.formats[i]);
-                            }
-                            if (i == info_data.formats.length - 1) {
-                                let formatv = vid_container[0];
-                                sess.videolink = formatv.url;
-                                console.log(sess);
-                            }
-                        }
-                        if (sess.like.includes(sess.subject + ':' + sess.lec_num)) {
-                            var like_status = true;
-                            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
-                        } else if (sess.dislike.includes(sess.subject + ':' + sess.lec_num)) {
-                            var like_status = false;
-                            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
-                        } else {
-                            var like_status = '';
-                            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
-                        }
-                    })
+                    sess.video_url_id = video_url_id;
+                    if (sess.like.includes(sess.subject + ':' + sess.lec_num)) {
+                        var like_status = true;
+                        res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+                    } else if (sess.dislike.includes(sess.subject + ':' + sess.lec_num)) {
+                        var like_status = false;
+                        res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+                    } else {
+                        var like_status = '';
+                        res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+                    }
+                    //    ytdl.getInfo(video_url_id).then(info_data => {
+                    //        vid_container = [];
+                    //        for (var i = 0; i < info_data.formats.length; i++) {
+                    //            if (info_data.formats[i].hasVideo == true && info_data.formats[i].hasAudio == true) {
+                    //                vid_container.push(info_data.formats[i]);
+                    //            }
+                    //            if (i == info_data.formats.length - 1) {
+                    //                let formatv = vid_container[0];
+                    //                sess.videolink = formatv.url;
+                    //                console.log(sess);
+                    //            }
+                    //        }
+                    //        if (sess.like.includes(sess.subject + ':' + sess.lec_num)) {
+                    //            var like_status = true;
+                    //            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+                    //        } else if (sess.dislike.includes(sess.subject + ':' + sess.lec_num)) {
+                    //            var like_status = false;
+                    //            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+                    //        } else {
+                    //            var like_status = '';
+                    //            res.render('player.ejs', { ip_address: sess.user_ip, username: sess.username, phonenumber: sess.phonenumber, branch: sess.branch, subject: sess.subject, lec_num: sess.lec_num, lec_name: data.lec_name, like: data.sublike, dislike: data.subdislike, like_status: like_status, views: data.views });
+                    //        }
+                    //    })
                 })
             })
         } else {
@@ -598,7 +603,7 @@ app.post('/grimlim', urlencodedParser, function(req, res) {
                 sess.views = sess.views + 1;
                 console.log(data);
             })
-            var response_code = { fv: sess.videolink };
+            var response_code = { fv: req.protocol + "://" + req.get("host") + "/stream" };
             res.send(JSON.stringify(response_code));
         }
     } catch (error) {
@@ -613,7 +618,29 @@ app.post('/grimlim', urlencodedParser, function(req, res) {
     }
 })
 
+app.get('/stream', function(req, res) {
+    ytdl.getInfo(sess.video_url_id).then(info_data => {
+        vid_container = [];
+        for (var i = 0; i < info_data.formats.length; i++) {
+            if (info_data.formats[i].hasVideo == true && info_data.formats[i].hasAudio == true) {
+                vid_container.push(info_data.formats[i]);
+            }
+            if (i == info_data.formats.length - 1) {
+                let formatv = vid_container[0];
+                https.get(formatv.url, function(response) {
+                    res.sendSeekable(response, {
+                        connection: 'keep-alive',
+                        "cache-control": "no-cache",
+                        type: 'video/mp4', // e.g. 'audio/mp4'
+                        length: formatv.contentLength,
+                        filename: 'stream.mp4' // e.g. 4287092
+                    });
+                });
 
+            }
+        }
+    })
+})
 
 app.post('/player_comment_preload', urlencodedParser, function(req, res) {
     var sess = req.session;
@@ -736,15 +763,12 @@ app.post('/vote', urlencodedParser, function(req, res) {
 
 
 
-
 function telegram_route_error_bot(message) {
-    error_bot.sendMessage(telegram_admin, message).then(function(resp) {
-        console.log('ADMIN updated !!!')
-    }).catch(function(error) {
-        if (error.response && error.response.statusCode === 403) {
-            console.log("ADMIN is not connected to o2plus_error_bot !!!");
-        }
-    });
+    request.get('https://o2plus-telegram1.herokuapp.com/helloworld', function(error, getresult) {
+        request.post('https://o2plus-telegram1.herokuapp.com/error', { form: { message: message } }, function(err, postresult) {
+            console.log(postresult);
+        })
+    })
 }
 
 
