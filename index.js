@@ -630,7 +630,8 @@ app.get('/stream', function(req, res) {
                 }
                 if (i == info_data.formats.length - 1) {
                     let formatv = vid_container[0];
-                    https.get(formatv.url, function(response) {
+                    https.get(formatv.url, function(err, response) {
+                        console.log(err);
                         res.sendSeekable(response, {
                             connection: 'keep-alive',
                             "cache-control": "no-cache",
@@ -639,7 +640,6 @@ app.get('/stream', function(req, res) {
                             filename: 'stream.mp4' // e.g. 4287092
                         });
                     });
-
                 }
             }
         }).catch(error => {
