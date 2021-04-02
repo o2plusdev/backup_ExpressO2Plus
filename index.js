@@ -620,27 +620,32 @@ app.post('/grimlim', urlencodedParser, function(req, res) {
 
 app.get('/stream', function(req, res) {
     var sess = req.session;
-    ytdl.getInfo(sess.video_url_id).then(info_data => {
-        vid_container = [];
-        for (var i = 0; i < info_data.formats.length; i++) {
-            if (info_data.formats[i].hasVideo == true && info_data.formats[i].hasAudio == true) {
-                vid_container.push(info_data.formats[i]);
-            }
-            if (i == info_data.formats.length - 1) {
-                let formatv = vid_container[0];
-                https.get(formatv.url, function(response) {
-                    res.sendSeekable(response, {
-                        connection: 'keep-alive',
-                        "cache-control": "no-cache",
-                        type: 'video/mp4', // e.g. 'audio/mp4'
-                        length: formatv.contentLength,
-                        filename: 'stream.mp4' // e.g. 4287092
+    console.log(sess.video_url_id);
+    try {
+        ytdl.getInfo(sess.video_url_id).then(info_data => {
+            vid_container = [];
+            for (var i = 0; i < info_data.formats.length; i++) {
+                if (info_data.formats[i].hasVideo == true && info_data.formats[i].hasAudio == true) {
+                    vid_container.push(info_data.formats[i]);
+                }
+                if (i == info_data.formats.length - 1) {
+                    let formatv = vid_container[0];
+                    https.get(formatv.url, function(response) {
+                        res.sendSeekable(response, {
+                            connection: 'keep-alive',
+                            "cache-control": "no-cache",
+                            type: 'video/mp4', // e.g. 'audio/mp4'
+                            length: formatv.contentLength,
+                            filename: 'stream.mp4' // e.g. 4287092
+                        });
                     });
-                });
 
+                }
             }
-        }
-    })
+        })
+    } catch (error) {
+        console.log(error)
+    }
 })
 
 app.post('/player_comment_preload', urlencodedParser, function(req, res) {
