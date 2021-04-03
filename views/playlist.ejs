@@ -335,10 +335,10 @@
                 if (i == (playlist_length - 1)) {
                     $("#playlistinfojs").append(temp);
                     var m = 0;
-                    var interval = setInterval(doStuff, 200); // 2000 ms = start after 2sec 
+                    var interval = setInterval(doStuff, 300); // 2000 ms = start after 2sec 
                     function doStuff() {
                         if (m < playlist_length) {
-                            $("#" + (m + 1)).fadeIn(100);
+                            $("#" + (m + 1)).fadeIn(200);
                             m++;
                         } else {
                             clearInterval(interval);
