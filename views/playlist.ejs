@@ -331,7 +331,7 @@
             var playlist_length = playlistifo_temp.length;
             var temp = null;
             for (var i = 0; i < playlist_length; i++) {
-                temp = temp + "<div style='display:none' id='" + playlistifo_temp[i].lec_num + "' data-role='tile' class='bg-indigo' data-size='wide' onclick='playlist_redirect(" + playlistifo_temp[i].lec_num + ");'> <span class='badge-top'>" + playlistifo_temp[i].lec_num + "</span> <span class='mif-film icon'></span><span class='branding-bar'> <marquee> Lecture - " + playlistifo_temp[i].lec_num + ' ' + playlistifo_temp[i].lec_name + " </marquee></span></div>";
+                temp = temp + "<div style='display:none' id='" + playlistifo_temp[i].lec_num + "' data-role='tile' class='bg-indigo' data-size='wide' onclick='playlist_redirect(" + playlistifo_temp[i].lec_num + ");'> <span class='badge-top'>" + playlistifo_temp[i].lec_num + "</span> <span class='mif-film icon'></span><span class='branding-bar'> <marquee> Lecture - " + playlistifo_temp[i].lec_name + " </marquee></span></div>";
                 if (i == (playlist_length - 1)) {
                     $("#playlistinfojs").append(temp);
                     var m = 0;
